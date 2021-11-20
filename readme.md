@@ -103,7 +103,7 @@ translate(base, config)
 ```
 安装 ts-node 
 ```
-npm i ts-node
+npm i ts-node -D
 ```
 终端运行
 ```
