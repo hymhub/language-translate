@@ -6,16 +6,21 @@ let agent = {}
 let options1 = { src: '', from: '', to: '', out: '', exportIp: '', exportPort: '' }
 const translator = (key: string, value: string): Promise<any> => {
     return new Promise<any>((resolve, reject) => {
-        translate(value, opts, agent)
-            // @ts-ignore
-            .then((res) => {
-                console.log(`${value} -----------> ${res.text}`)
-                resolve({key, newValue: res.text});
-            })
-            // @ts-ignore
-            .catch((err) => {
-                reject(err);
-            });
+        function go() {
+            translate(value, opts, agent)
+                // @ts-ignore
+                .then((res) => {
+                    console.log(`${value} -----------> ${res.text}`)
+                    resolve({key, newValue: res.text});
+                })
+                // @ts-ignore
+                .catch((err) => {
+                    setTimeout(() => {
+                        go()
+                    }, 1000);
+                });
+        }
+        go()
     });
 };
 
@@ -71,6 +76,7 @@ export const more = async (options: { src: string, from: string, to: string, out
 
     let res = JSON.stringify(toText)
     res = res.slice(1, res.length - 1)
+    res = '\t' + res.split('","').join('",\n\t"')
     
     fs.writeFile(
         options.out,
