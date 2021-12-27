@@ -9,16 +9,21 @@ let agent = {};
 let options1 = { src: '', from: '', to: '', out: '', exportIp: '', exportPort: '' };
 const translator = (key, value) => {
     return new Promise((resolve, reject) => {
-        translate(value, opts, agent)
-            // @ts-ignore
-            .then((res) => {
-            console.log(`${value} -----------> ${res.text}`);
-            resolve({ key, newValue: res.text });
-        })
-            // @ts-ignore
-            .catch((err) => {
-            reject(err);
-        });
+        function go() {
+            translate(value, opts, agent)
+                // @ts-ignore
+                .then((res) => {
+                console.log(`${value} -----------> ${res.text}`);
+                resolve({ key, newValue: res.text });
+            })
+                // @ts-ignore
+                .catch((err) => {
+                setTimeout(() => {
+                    go();
+                }, 1000);
+            });
+        }
+        go();
     });
 };
 const more = async (options) => {
@@ -71,6 +76,7 @@ const more = async (options) => {
     outFile = outFile.slice(0, outFile.lastIndexOf('}'));
     let res = JSON.stringify(toText);
     res = res.slice(1, res.length - 1);
+    res = '\t' + res.split('","').join('",\n\t"');
     fs.writeFile(options.out, outFile + res + ',' + '\n}', 
     // @ts-ignore
     (err) => {
