@@ -3,7 +3,8 @@ const tunnel = require("tunnel");
 let opts = {from: "", to: ""};
 const fs = require("fs");
 let agent = {}
-let options1 = { src: '', from: '', to: '', out: '', exportIp: '', exportPort: '' }
+let optionsCopy: {[x:string]: any} = {}
+let failedNum = 0
 const translator = (key: string, value: string): Promise<any> => {
     return new Promise<any>((resolve, reject) => {
         function go() {
@@ -15,6 +16,21 @@ const translator = (key: string, value: string): Promise<any> => {
                 })
                 // @ts-ignore
                 .catch((err) => {
+                    console.log('Translation failed, trying again...')
+                    if (++failedNum > 10) {
+                        console.log('You can check whether the agent is normal')
+                    }
+                    agent = {
+                        agent: tunnel.httpsOverHttp({
+                            proxy: {
+                                host: optionsCopy.exportIp,
+                                port: optionsCopy.exportPort,
+                                headers: {
+                                    "User-Agent": "Node",
+                                },
+                            },
+                        } as any),
+                    }
                     setTimeout(() => {
                         go()
                     }, 1000);
@@ -26,6 +42,8 @@ const translator = (key: string, value: string): Promise<any> => {
 
 export const more = async (options: { src: string, from: string, to: string, out: string, exportIp: string, exportPort: string }) => {
     opts = {from: options.from, to: options.to}
+    optionsCopy = options
+    failedNum = 0
     agent = {
         agent: tunnel.httpsOverHttp({
             proxy: {
