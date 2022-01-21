@@ -7,9 +7,9 @@ module.exports = (base, config) => {
     config.forEach(item => {
         if (mode == 'create') {
             createModeFun({
-                src: path.join(baseFromPath, fromFileName),
+                src: `${baseFromPath}${fromFileName}`,
                 from: fromLang,
-                out: path.join(baseToPath, item.toFileName),
+                out: `${baseToPath}${item.toFileName}`,
                 to: item.lang,
                 exportIp: ip,
                 exportPort: port,
@@ -17,9 +17,9 @@ module.exports = (base, config) => {
         }
         else if (mode == 'insert') {
             insertModeFun({
-                src: path.join(baseFromPath, fromFileName),
+                src: `${baseFromPath}${fromFileName}`,
                 from: fromLang,
-                out: path.join(baseToPath, item.toFileName),
+                out: `${baseToPath}${item.toFileName}`,
                 to: item.lang,
                 exportIp: ip,
                 exportPort: port,

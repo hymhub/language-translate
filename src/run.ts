@@ -28,18 +28,18 @@ module.exports = (
     config.forEach(item => {
         if (mode == 'create') {
             createModeFun({
-                src: path.join(baseFromPath, fromFileName),
+                src: `${baseFromPath}${fromFileName}`,
                 from: fromLang,
-                out: path.join(baseToPath, item.toFileName),
+                out: `${baseToPath}${item.toFileName}`,
                 to: item.lang,
                 exportIp: ip,
                 exportPort: port,
             })
         } else if (mode == 'insert') {
             insertModeFun({
-                src: path.join(baseFromPath, fromFileName),
+                src: `${baseFromPath}${fromFileName}`,
                 from: fromLang,
-                out: path.join(baseToPath, item.toFileName),
+                out: `${baseToPath}${item.toFileName}`,
                 to: item.lang,
                 exportIp: ip,
                 exportPort: port,

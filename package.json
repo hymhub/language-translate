@@ -1,6 +1,6 @@
 {
   "name": "language-translate",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "一个可以把ts多语言文件在线翻译并批量生成或插入指定文件的插件",
   "main": "dist/run.js",
   "scripts": {
