@@ -58,17 +58,27 @@ export const more = async (options: { src: string, from: string, to: string, out
     // @ts-ignore
     let tot = fs.readFileSync(options.src, 'utf8');
     tot = tot.split('export')?.[1].split('{')
-    tot = tot.splice(1).join('{')
+    tot = tot.splice(1).join('{').trimEnd()
+    if (tot[tot.length-1] == ';') {
+        tot = tot.slice(0, -1)
+    }
     let toText: { [x:string]: any } = {}
     tot = 'toText = {' + tot;
-    eval(`(${tot})`);
-    
+    try {
+        eval(`(${tot})`);
+    } catch (error) {
+        throw new Error("翻译异常: 请检查待翻译文件内容是否正常\n" + error)
+    }
     // let toText = require(options.out)
     // @ts-ignore
     const translators = [];
     const keys = Object.keys(toText)
     for (let i = 0; i < keys.length; i++) {
-        const data = await translator(keys[i],toText[keys[i]].toString())
+        let itemText = toText[keys[i]]
+        if (typeof itemText !== 'string') {
+            throw new Error("翻译异常: 暂不支持翻译 string 以外的类型!")
+        }
+        const data = await translator(keys[i],itemText.toString())
         // @ts-ignore
         toText[data.key] = data.newValue;
         opts = {from: options.from, to: options.to}
@@ -105,7 +115,7 @@ export const more = async (options: { src: string, from: string, to: string, out
                 console.error(err);
                 return;
             }
-            console.log(`生成文件：${options.out}`);
+            console.log(`已将翻译结果成功插入到: ${options.out}`);
         }
     );
     return Promise.resolve();

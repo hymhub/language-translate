@@ -1,12 +1,32 @@
 "use strict";
-var shell = require('shelljs');
-var path = require('path');
+// @ts-ignore
+const path = require('path');
+const { createModeFun, insertModeFun } = require('./index');
 module.exports = (base, config) => {
     let { fromLang, fromFileName, baseFromPath, baseToPath, ip, port, mode, } = base;
     config.forEach(item => {
-        if (shell.exec(`node ${path.join(__dirname, 'index.js')} ${mode} -s ${baseFromPath}${fromFileName} -from ${fromLang} -o ${baseToPath}${item.toFileName} -to ${item.lang} -ei ${ip} -ep ${port}`).code !== 0) {
-            shell.echo('Error');
-            shell.exit(1);
+        if (mode == 'create') {
+            createModeFun({
+                src: path.join(baseFromPath, fromFileName),
+                from: fromLang,
+                out: path.join(baseToPath, item.toFileName),
+                to: item.lang,
+                exportIp: ip,
+                exportPort: port,
+            });
+        }
+        else if (mode == 'insert') {
+            insertModeFun({
+                src: path.join(baseFromPath, fromFileName),
+                from: fromLang,
+                out: path.join(baseToPath, item.toFileName),
+                to: item.lang,
+                exportIp: ip,
+                exportPort: port,
+            });
+        }
+        else {
+            throw new Error("mode must enter 'create' or 'insert'");
         }
     });
 };

@@ -1,11 +1,11 @@
 {
   "name": "language-translate",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "一个可以把ts多语言文件在线翻译并批量生成或插入指定文件的插件",
   "main": "dist/run.js",
   "scripts": {
-    "start": "node dist/run.js",
-    "build": "rm -rf dist && tsc",
+    "test": "node dist/test/index.js",
+    "build": "rm -rf dist && tsc && cp ./src/test/translateFrom.ts ./dist/test/translateFrom.ts && cp -r ./src/test/dist ./dist/test/dist",
     "publish": "npm run build && npm publish"
   },
   "keywords": [],
@@ -17,8 +17,6 @@
   },
   "dependencies": {
     "@vitalets/google-translate-api": "^7.0.0",
-    "commander": "^8.3.0",
-    "tunnel": "^0.0.6",
-    "shelljs": "^0.8.4"
+    "tunnel": "^0.0.6"
   }
 }

@@ -14,5 +14,5 @@
       ]
     }
   },
-  "exclude": ["text.ts"]
+  "exclude": ["./src/test/translateFrom.ts", "./src/test/dist"]
 }
