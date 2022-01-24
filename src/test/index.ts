@@ -15,7 +15,7 @@ const base: {
     fromLang: 'en',
     fromFileName: 'translateFrom.ts',
     // @ts-ignore
-    baseFromPath: __dirname,
+    baseFromPath: __dirname + '/',
     // @ts-ignore
     baseToPath: path.join(__dirname, 'dist'),
     ip: '127.0.0.1',
@@ -26,11 +26,11 @@ const base: {
 const config: Array<{ lang: String, toFileName: String }> = [
     {
         lang: 'es',
-        toFileName: 'es.ts',
+        toFileName: '/es.ts',
     },
     {
         lang: 'ja',
-        toFileName: 'ja.ts',
+        toFileName: '/ja.ts',
     },
 ]
 
