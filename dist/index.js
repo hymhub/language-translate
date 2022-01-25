@@ -23,8 +23,8 @@ const insertModeFun = (options) => {
         throw new Error(`缺少必要参数:${JSON.stringify(options)}`);
     const startTime = new Date().getTime();
     more(options)
-        .then(() => {
-        console.log(`翻译完成----->耗时：${Number((new Date().getTime() - startTime) / 1000)}s`);
+        .then((res) => {
+        res !== 'notkey' && console.log(`翻译完成----->耗时：${Number((new Date().getTime() - startTime) / 1000)}s`);
     })
         .catch((e) => {
         throw e;
