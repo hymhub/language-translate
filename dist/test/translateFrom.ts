@@ -1,4 +1,5 @@
 export default {
-    hello: 'hello world',
+    hello: 'change hello',
+    yes: 'yes',
 }
   

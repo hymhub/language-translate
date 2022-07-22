@@ -64,13 +64,9 @@ export const more = async (options: {
   };
   // @ts-ignore
   let tot = fs.readFileSync(options.src, "utf8");
-  tot = tot.split("export")?.[1].split("{");
-  tot = tot.splice(1).join("{").trimEnd();
-  if (tot[tot.length - 1] == ";") {
-    tot = tot.slice(0, -1);
-  }
+  tot = tot.slice(tot.indexOf('{'), tot.lastIndexOf('}')+1);
   let toText: { [x: string]: any } = {};
-  tot = "toText = {" + tot;
+  tot = "toText = " + tot;
   try {
     eval(`(${tot})`);
   } catch (error) {
@@ -82,7 +78,6 @@ export const more = async (options: {
   }
   // let toText = require(options.out)
   // @ts-ignore
-  const translators = [];
   const keys = Object.keys(toText);
   for (let i = 0; i < keys.length; i++) {
     let itemText = toText[keys[i]];
@@ -105,21 +100,38 @@ export const more = async (options: {
       } as any),
     };
   }
-  let prefix = "";
-  let src = fs.readFileSync(options.src, "utf8");
-  src = src.split("export");
-  prefix += `${src[0]}export${src[1].split("{")[0]}`;
+
+  const funValues: string[] = [];
   let outFile = fs.readFileSync(options.out, "utf8");
+  outFile = outFile.replace(/,\s*\n[\s\S]+:[\s\S]+(=>|return)[\s]+[\S]+[\s\S]*,\s*\n/g, (v: string) => {
+    funValues.push(v);
+    return ',\n'
+  });
+  outFile = outFile.slice(outFile.indexOf('{'), outFile.lastIndexOf('}')+1);
+  let outText: { [x: string]: any } = {};
+  outFile = "outText = " + outFile;
+  try {
+    eval(`(${outFile})`);
+  } catch (error) {
+    throw new Error("翻译异常: 检查目标文件内是否有错误\n SRC ==> " +options.src+ error);
+  }
 
-  outFile = outFile.slice(0, outFile.lastIndexOf("}"));
+  outText = {
+    ...outText,
+    ...toText
+  };
 
-  let res = JSON.stringify(toText);
-  res = res.slice(1, res.length - 1);
-  res = "\t" + res.split('","').join('",\n\t"');
-
+  let resultString = 'export default {\n';
+  funValues.forEach(item => {
+    resultString += item.slice(item.indexOf('\n')+1, item.length);
+  });
+  for (const key in outText) {
+    resultString += `\t${JSON.stringify({[key]: outText[key]}).slice(1, -1)},\n`
+  }
+  resultString += '}';
   fs.writeFile(
     options.out,
-    outFile + res + "," + "\n}",
+    resultString,
     // @ts-ignore
     (err) => {
       if (err) {
