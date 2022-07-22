@@ -101,13 +101,17 @@ export const more = async (options: {
     };
   }
 
+  let startStr = '';
   const funValues: string[] = [];
   let outFile = fs.readFileSync(options.out, "utf8");
-  outFile = outFile.replace(/,\s*\n[\s\S]+:[\s\S]+(=>|return)[\s]+[\S]+[\s\S]*,\s*\n/g, (v: string) => {
-    funValues.push(v);
-    return ',\n'
-  });
+  startStr = outFile.slice(0, outFile.indexOf('export'));
+  outFile = outFile.slice(outFile.indexOf('export'));
+  startStr += outFile.slice(0, outFile.indexOf('{'));
   outFile = outFile.slice(outFile.indexOf('{'), outFile.lastIndexOf('}')+1);
+  outFile = outFile.replace(/['"`a-zA-Z0-9_]+:.*(\(.+\).*=>|function[\s\S]+?return)[\s\S]+?,\n/g, (v: string) => {
+    funValues.push(v);
+    return '';
+  });
   let outText: { [x: string]: any } = {};
   outFile = "outText = " + outFile;
   try {
@@ -121,9 +125,9 @@ export const more = async (options: {
     ...toText
   };
 
-  let resultString = 'export default {\n';
+  let resultString = startStr + '{\n';
   funValues.forEach(item => {
-    resultString += item.slice(item.indexOf('\n')+1, item.length);
+    resultString += `\t${item}`;
   });
   for (const key in outText) {
     resultString += `\t${JSON.stringify({[key]: outText[key]}).slice(1, -1)},\n`
