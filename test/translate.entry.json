@@ -1,0 +1,7 @@
+{
+  "hello": "Hello {{{name}}}, how are you today?",
+  "button": {
+    "confirm": "confirm",
+    "cancel": "cancel"
+  }
+}

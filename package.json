@@ -1,22 +1,67 @@
 {
   "name": "language-translate",
-  "version": "1.1.5",
-  "description": "一个可以把ts多语言文件在线翻译并批量生成或插入指定文件的插件",
-  "main": "dist/run.js",
+  "version": "2.0.0",
+  "description": "A plug-in that can translate ts/js/json multilingual files online and generate or insert specified files in batches",
   "scripts": {
-    "test": "node dist/test/index.js",
-    "build": "rm -rf dist && tsc && cp ./src/test/translateFrom.ts ./dist/test/translateFrom.ts && cp -r ./src/test/dist ./dist/test/dist",
-    "publish": "npm run build && npm publish"
+    "build": "rimraf ./dist && tsc"
   },
-  "keywords": [],
-  "author": "hymenhan",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hymhub/language-translate.git"
+  },
+  "author": "hym",
   "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^16.11.6",
-    "typescript": "^4.4.4"
+  "bugs": {
+    "url": "https://github.com/hymhub/language-translate/issues"
   },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "require": "./dist/utils.js",
+      "import": "./dist/utils.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "require": "./dist/types.js",
+      "import": "./dist/types.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "bin": {
+    "translate": "bin/translate.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/hymhub/language-translate#readme",
   "dependencies": {
-    "@vitalets/google-translate-api": "^7.0.0",
-    "tunnel": "^0.0.6"
+    "@vitalets/google-translate-api": "^8.0.0",
+    "chalk": "^5.2.0",
+    "commander": "^10.0.0",
+    "tunnel": "^0.0.6",
+    "typeof-plus": "^1.0.5",
+    "unconfig": "^0.3.5"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.5",
+    "@types/tunnel": "^0.0.3",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.7.4"
   }
 }

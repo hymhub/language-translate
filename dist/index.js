@@ -1,33 +1,40 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.insertModeFun = exports.createModeFun = void 0;
-const { google } = require('./google');
-const { more } = require('./more');
-const createModeFun = (options) => {
-    const { src, from, to, out } = options;
-    if (!(src && from && to && out))
-        throw new Error(`缺少必要参数:${JSON.stringify(options)}`);
-    const startTime = new Date().getTime();
-    google(options)
-        .then(() => {
-        console.log(`翻译完成----->耗时：${Number((new Date().getTime() - startTime) / 1000)}s`);
-    })
-        .catch((e) => {
-        throw e;
-    });
-};
-exports.createModeFun = createModeFun;
-const insertModeFun = (options) => {
-    const { src, from, to, out } = options;
-    if (!(src && from && to && out))
-        throw new Error(`缺少必要参数:${JSON.stringify(options)}`);
-    const startTime = new Date().getTime();
-    more(options)
-        .then((res) => {
-        res !== 'notkey' && console.log(`翻译完成----->耗时：${Number((new Date().getTime() - startTime) / 1000)}s`);
-    })
-        .catch((e) => {
-        throw e;
-    });
-};
-exports.insertModeFun = insertModeFun;
+import { loadConfig } from "unconfig";
+import { Command } from 'commander';
+import { translate } from "./translate.js";
+const program = new Command();
+program.description('Translate a single js/ts/json file')
+    .option('-i, --input <string>', 'source file path')
+    .option('-o, --output <string>', 'target file path')
+    .option('-f, --fromlang <string>', 'source file language')
+    .option('-t, --targetlang <string>', 'target file language')
+    .action(async (options) => {
+    if (options.input
+        && options.output
+        && options.fromlang
+        && options.targetlang) {
+        // a file run
+    }
+    else {
+        const { config } = await loadConfig({
+            sources: [
+                {
+                    files: "translate.config",
+                    extensions: ["ts", "js", "json", ""],
+                },
+            ],
+        });
+        config.translate.forEach(item => {
+            item.targetConfig.forEach(it => {
+                translate({
+                    input: config.fromPath,
+                    output: it.outPath,
+                    fromLang: config.fromLang,
+                    targetLang: it.targetLang,
+                    toolsLang: config.toolsLang,
+                    proxy: config.proxy,
+                });
+            });
+        });
+    }
+});
+program.parse();

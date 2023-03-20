@@ -1,18 +1,18 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es2017",
-    "allowJs": false,
-    "strict": true,
+    "target": "ES2017",
+    "module": "ES2022",
+    "lib": ["ES2017"],
     "moduleResolution": "node",
-    "outDir": "dist",
-    "baseUrl": "./src",
-    "paths": {
-      "*": [
-        "node_modules/*"
-      ]
-    }
+    "esModuleInterop": true,
+    "declaration": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "outDir": "./dist",
   },
-  "exclude": ["./src/test/translateFrom.ts", "./src/test/dist"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "bin", "/test/**/*"]
 }
