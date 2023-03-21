@@ -1,6 +1,6 @@
 import { Proxy, Lang } from './types';
 export declare const translate: ({ input, output, fromLang, targetLang, toolsLang, proxy, }: {
-    input?: string | undefined;
+    input: string;
     output: string;
     fromLang: Lang;
     targetLang: Lang;

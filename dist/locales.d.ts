@@ -2,9 +2,27 @@ export declare const ls: {
     en: {
         checkNetwork: string;
         retry: string;
+        sourceErr: string;
+        sourceNull: string;
+        targetErr: string;
+        patchSuccess: string;
+        createSuccess: string;
+        folderNull: string;
+        customOutConfig: string;
+        checkConfig: string;
+        checkFromPath: string;
     };
     "zh-CN": {
         checkNetwork: string;
         retry: string;
+        sourceErr: string;
+        sourceNull: string;
+        targetErr: string;
+        patchSuccess: string;
+        createSuccess: string;
+        folderNull: string;
+        customOutConfig: string;
+        checkConfig: string;
+        checkFromPath: string;
     };
 };

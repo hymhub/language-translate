@@ -54,11 +54,13 @@
     "@vitalets/google-translate-api": "^8.0.0",
     "chalk": "^5.2.0",
     "commander": "^10.0.0",
+    "inquirer": "^9.1.5",
     "tunnel": "^0.0.6",
     "typeof-plus": "^1.0.5",
     "unconfig": "^0.3.5"
   },
   "devDependencies": {
+    "@types/inquirer": "^9.0.3",
     "@types/node": "^18.7.5",
     "@types/tunnel": "^0.0.3",
     "rimraf": "^3.0.2",
