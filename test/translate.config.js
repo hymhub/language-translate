@@ -1,5 +1,5 @@
-import { Lang } from '../src/types';
-import { defineConfig } from '../src/utils';
+import { Lang } from 'language-translate/types';
+import { defineConfig } from 'language-translate/utils';
 
 export default defineConfig({
   // toolsLang: 'zh-CN',
@@ -9,26 +9,10 @@ export default defineConfig({
   },
   fromLang: Lang.en,
   // fromPath: 'translate.entry.js',
+  fromPath: 'translate.entry.json',
   translate: [
     {
-      label: '翻译到label',
-      targetConfig: [
-        {
-          targetLang: Lang.de,
-          outPath: 'locales/label/de.json',
-        },
-        {
-          targetLang: Lang['zh-CN'],
-          outPath: 'locales/label/zh.json',
-        },
-        {
-          targetLang: Lang.ko,
-          outPath: 'locales/label/ko.json',
-        },
-      ]
-    },
-    {
-      label: '翻译到error',
+      label: '将结果翻译到locales/error文件夹下',
       targetConfig: [
         {
           targetLang: Lang.de,
@@ -45,21 +29,21 @@ export default defineConfig({
       ]
     },
     {
-      label: '翻译到js',
+      label: '将结果翻译到locales/label文件夹下',
       targetConfig: [
         {
           targetLang: Lang.de,
-          outPath: 'locales/js/de.js',
+          outPath: 'locales/label/de.json',
         },
         {
           targetLang: Lang['zh-CN'],
-          outPath: 'locales/js/zh.js',
+          outPath: 'locales/label/zh.json',
         },
         {
           targetLang: Lang.ko,
-          outPath: 'locales/js/ko.js',
+          outPath: 'locales/label/ko.json',
         },
       ]
-    }
+    },
   ]
 })

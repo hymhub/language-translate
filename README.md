@@ -112,6 +112,8 @@ npm run translate
   |-- translate.entry.json
 ```
 
+此后有新文案需要翻译时，只需要修改 `fromPath` 文件内容(即示例中`translate.entry.json`)，再执行 `npm run translate` 即可实现增量更新
+
 ## 配置API
 
 ### `translate.config.(js|ts|json)`
@@ -147,71 +149,176 @@ npm run translate
 
 ### `Lang`
 
-| Language/语言 | Translation Code/翻译代码 |
+| 语言 | 翻译代码 |
 | :-: | :-: |
-| Chinese (Simplified)/中文(简体) | zh-CN |
-| Chinese (Traditional)/中文(繁体) | zh-TW |
-| English/英语 | en |
-| Vietnamese/越南语 | vi |
-| Albanian/阿尔巴尼亚语 | sq |
-| Arabic/阿拉伯语 | ar |
-| Azerbaijani/阿塞拜疆语 | az |
-| Irish/爱尔兰语 | ga |
-| Estonian/爱沙尼亚语 | et |
-| Belarusian/白俄罗斯语 | be |
-| Bulgarian/保加利亚语 | bg |
-| Icelandic/冰岛语 | is |
-| Polish/波兰语 | pl |
-| Persian/波斯语 | fa |
-| Afrikaans/布尔文(南非荷兰语) | af |
-| Danish/丹麦语 | da |
-| German/德语 | de |
-| Russian/俄语 | ru |
-| French/法语 | fr |
-| Filipino/菲律宾语 | tl |
-| Finnish/芬兰语 | fi |
-| Georgian/格鲁吉亚语 | ka |
-| Haitian Creole/海地克里奥尔语 | ht |
-| Korean/韩语 | ko |
-| Dutch/荷兰语 | nl |
-| Galician/加利西亚语 | gl |
-| Catalan/加泰罗尼亚语 | ca |
-| Czech/捷克语 | cs |
-| Croatian/克罗地亚语 | hr |
-| Latvian/拉脱维亚语 | lv |
-| Lithuanian/立陶宛语 | lt |
-| Romanian/罗马尼亚语 | ro |
-| Maltese/马耳他语 | mt |
-| Malay/马来语 | ms |
-| Macedonian/马其顿语 | mk |
-| Norwegian/挪威语 | no |
-| Portuguese/葡萄牙语 | pt |
-| Japanese/日语 | ja |
-| Swedish/瑞典语 | sv |
-| Serbian/塞尔维亚语 | sr |
-| Slovak/斯洛伐克语 | sk |
-| Slovenian/斯洛文尼亚语 | sl |
-| Swahili/斯瓦希里语 | sw |
-| Thai/泰语 | th |
-| Turkish/土耳其语 | tr |
-| Welsh/威尔士语 | cy |
-| Ukrainian/乌克兰语 | uk |
-| Basque/西班牙的巴斯克语 | eu |
-| Spanish/西班牙语 | es |
-| Hebrew/希伯来语 | iw |
-| Greek/希腊语 | el |
-| Hungarian/匈牙利语 | hu |
-| Armenian/亚美尼亚语 | hy |
-| Italian/意大利语 | it |
-| Yiddish/意第绪语 | yi |
-| Hindi/印地语 | hi |
-| Urdu/印度乌尔都语 | ur |
-| Indonesian/印尼语 | id |
+| 中文(简体) | zh-CN |
+| 中文(繁体) | zh-TW |
+| 英语 | en |
+| 越南语 | vi |
+| 阿尔巴尼亚语 | sq |
+| 阿拉伯语 | ar |
+| 阿塞拜疆语 | az |
+| 爱尔兰语 | ga |
+| 爱沙尼亚语 | et |
+| 白俄罗斯语 | be |
+| 保加利亚语 | bg |
+| 冰岛语 | is |
+| 波兰语 | pl |
+| 波斯语 | fa |
+| 布尔文(南非荷兰语) | af |
+| 丹麦语 | da |
+| 德语 | de |
+| 俄语 | ru |
+| 法语 | fr |
+| 菲律宾语 | tl |
+| 芬兰语 | fi |
+| 格鲁吉亚语 | ka |
+| 海地克里奥尔语 | ht |
+| 韩语 | ko |
+| 荷兰语 | nl |
+| 加利西亚语 | gl |
+| 加泰罗尼亚语 | ca |
+| 捷克语 | cs |
+| 克罗地亚语 | hr |
+| 拉脱维亚语 | lv |
+| 立陶宛语 | lt |
+| 罗马尼亚语 | ro |
+| 马耳他语 | mt |
+| 马来语 | ms |
+| 马其顿语 | mk |
+| 挪威语 | no |
+| 葡萄牙语 | pt |
+| 日语 | ja |
+| 瑞典语 | sv |
+| 塞尔维亚语 | sr |
+| 斯洛伐克语 | sk |
+| 斯洛文尼亚语 | sl |
+| 斯瓦希里语 | sw |
+| 泰语 | th |
+| 土耳其语 | tr |
+| 威尔士语 | cy |
+| 乌克兰语 | uk |
+| 西班牙的巴斯克语 | eu |
+| 西班牙语 | es |
+| 希伯来语 | iw |
+| 希腊语 | el |
+| 匈牙利语 | hu |
+| 亚美尼亚语 | hy |
+| 意大利语 | it |
+| 意第绪语 | yi |
+| 印地语 | hi |
+| 印度乌尔都语 | ur |
+| 印尼语 | id |
 
 ## FAQ
 
-在具有
+`translate` 配置项配置多项的适用场景
+在开发中，`locales` 文件夹下可能会有专门存放错误码、业务文案的文件夹，甚至多种模块，例如:
+```
+|-- Your Project Name
+  |-- locales
+    |-- error
+      |-- de.json
+      |-- ko.json
+      |-- zh.json
+    |-- label
+      |-- de.json
+      |-- ko.json
+      |-- zh.json
+```
+此时在待翻译文件填入错误码文案内容，例如 `translate.entry.json`
+```json
+{
+  "0": "service error",
+  "4": "client error",
+}
+```
+现在我们只想让翻译后的结果插入 `locales/error` 目录下，只需在 `translate` 配置项添加多个选项后再启动翻译，这时终端会提示让您进行选择:
+```js
+// translate.config.js
+import { Lang } from 'language-translate/types';
+import { defineConfig } from 'language-translate/utils';
 
+export default defineConfig({
+  proxy: {
+    host: '127.0.0.1',
+    port: 7890,
+  },
+  fromLang: Lang.en,
+  fromPath: 'translate.entry.json',
+  translate: [
+    {
+      label: '将结果翻译到locales/error文件夹下',
+      targetConfig: [
+        {
+          targetLang: Lang.de,
+          outPath: 'locales/error/de.json',
+        },
+        {
+          targetLang: Lang['zh-CN'],
+          outPath: 'locales/error/zh.json',
+        },
+        {
+          targetLang: Lang.ko,
+          outPath: 'locales/error/ko.json',
+        },
+      ]
+    },
+    {
+      label: '将结果翻译到locales/label文件夹下',
+      targetConfig: [
+        {
+          targetLang: Lang.de,
+          outPath: 'locales/label/de.json',
+        },
+        {
+          targetLang: Lang['zh-CN'],
+          outPath: 'locales/label/zh.json',
+        },
+        {
+          targetLang: Lang.ko,
+          outPath: 'locales/label/ko.json',
+        },
+      ]
+    },
+  ]
+})
+```
+终端执行
+```bash
+npm run translate
+```
+<p><img width="300px" src="./md/useCustomKey.png" /></p>
+
+此时已实现翻译输出可选功能
+
+## 在 bash 中使用
+
+language-translate 也支持在 bash 中翻译单个文件
+```bash
+npm i language-translate -g
+```
+直接在 bash 执行
+```bash
+translate -i /User/xxx/source.json -o /User/xxx/target.json -f en -t zh-CN -h 127.0.0.1 -p 7890
+```
+您也可以输入 `translate --help` 获取帮助
+```bash
+translate --help
+# 终端输出
+Usage: dist [options]
+
+Translate a single js/ts/json file
+
+Options:
+  -i, --input <string>     source file path
+  -o, --output <string>    target file path
+  -f, --fromlang <Lang>    source file language
+  -t, --targetlang <Lang>  target file language
+  -h, --host <string>      proxy host
+  -p, --port <string>      proxy port
+  --help                   display help for command
+```
 
 ## 问题
 
