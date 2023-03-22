@@ -1,6 +1,6 @@
 {
   "name": "language-translate",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A plug-in that can translate ts/js/json multilingual files online and generate or insert specified files in batches",
   "scripts": {
     "build": "rimraf ./dist && tsc"
@@ -10,7 +10,7 @@
     "url": "git+https://github.com/hymhub/language-translate.git"
   },
   "author": "hym",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/hymhub/language-translate/issues"
   },
