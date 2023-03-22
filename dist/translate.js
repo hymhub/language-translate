@@ -150,12 +150,9 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
     }
     else {
         outPutBuffer += createJsonBuffer(resJson).slice(2);
-        try {
-            fs.writeFileSync(outPutFullPath, outPutBuffer);
-            consoleLog(`${ls[toolsLang].createSuccess} --> ${outPutFullPath}`);
-        }
-        catch (error) {
-            consoleError(`${ls[toolsLang].folderNull} --> ${outPutFullPath}`);
-        }
+        const outDirname = path.dirname(outPutFullPath);
+        fs.existsSync(outDirname) || fs.mkdirSync(outDirname, { recursive: true });
+        fs.writeFileSync(outPutFullPath, outPutBuffer);
+        consoleLog(`${ls[toolsLang].createSuccess} --> ${outPutFullPath}`);
     }
 };

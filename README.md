@@ -25,6 +25,10 @@
   </a>
 <p>
 
+<p align="center">
+  <img src="./md/demo.gif">
+<p>
+
 ## 安装
 
 ```bash
@@ -93,7 +97,7 @@ export default defineConfig({
 }
 ```
 
-确保项目根目录下 `locales` 文件夹存在后在终端执行
+在终端执行命令启动翻译
 
 ```bash
 npm run translate

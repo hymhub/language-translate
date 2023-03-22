@@ -7,7 +7,6 @@ export declare const ls: {
         targetErr: string;
         patchSuccess: string;
         createSuccess: string;
-        folderNull: string;
         customOutConfig: string;
         checkConfig: string;
         checkFromPath: string;
@@ -20,7 +19,6 @@ export declare const ls: {
         targetErr: string;
         patchSuccess: string;
         createSuccess: string;
-        folderNull: string;
         customOutConfig: string;
         checkConfig: string;
         checkFromPath: string;

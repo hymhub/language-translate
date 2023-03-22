@@ -25,6 +25,10 @@ A plug-in that translates ts/js/json multilingual files online and generates or 
   </a>
 <p>
 
+<p align="center">
+  <img src="./md/demo_en.gif">
+<p>
+
 ## Install
 
 ```bash
@@ -94,7 +98,7 @@ Add scripts command to `package.json`
 }
 ```
 
-Make sure that the `locales` folder exists in the project root directory and execute it in the terminal
+Execute the command at the terminal to start the translation
 
 ```bash
 npm run translate
