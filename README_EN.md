@@ -77,7 +77,7 @@ For example, in the root directory create `translate.entry.json`
 {
   "hello": "Hello {{{name}}}, how are you today?",
   "button": {
-    "confirm": "data",
+    "confirm": "confirm",
     "cancel": "cancel"
   },
   "header": {
@@ -308,7 +308,7 @@ You can also type `translate --help` for help
 ```bash
 translate --help
 # terminal output
-Usage: dist [options]
+Usage: translate [options]
 
 Translate a single js/ts/json file
 

@@ -76,7 +76,7 @@ export default defineConfig({
 {
   "hello": "Hello {{{name}}}, how are you today?",
   "button": {
-    "confirm": "data",
+    "confirm": "confirm",
     "cancel": "cancel"
   },
   "header": {
@@ -306,7 +306,7 @@ translate -i /User/xxx/source.json -o /User/xxx/target.json -f en -t zh-CN -h 12
 ```bash
 translate --help
 # 终端输出
-Usage: dist [options]
+Usage: translate [options]
 
 Translate a single js/ts/json file
 
