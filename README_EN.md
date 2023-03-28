@@ -5,7 +5,7 @@ A plug-in that translates ts/js/json multilingual files online and generates or 
 [中文](./README.md) ｜ [English](./README_EN.md)
 <p align="center">
   <a href="https://github.com/hymhub/language-translate" target="_blank">
-    <img src="./md/logo.png" alt="heimdall-ts" width="250"/>
+    <img src="./md/logo.png" alt="language-translate" width="250"/>
   </a>
 </p>
 <p align="center">
@@ -330,12 +330,9 @@ Options:
 
 If you have any questions, you can contact me by
 
-- Email : 1749207188@qq.com
+- Email : hyminghan@qq.com
 
 
 ## Author
 
-- [@hymhub](https://github.com/hymhub)
-
-
-
+- [@hymenhan](https://github.com/hymhub)
