@@ -186,14 +186,10 @@ locales
 也可以将翻译结果输出到另一个文件夹，只需要更改 `outPath` 即可，更多用法等你解锁哦，也可结合[FAQ](#faq)输出可选做出更多花样，项目 [example](https://github.com/hymhub/language-translate/tree/main/example) 目录中也提供了一些简单示例
 
 ## 配置API
-<style>
-table th {
-  white-space: nowrap;
-}
-</style>
+
 ### `translate.config.(js|ts)`
 
-| 属性 | 描述 | 类型 | 默认值 | 是否必填 |
+| 属性 | 描述 | 类型 | 默认值 | 必填 |
 | :-: | :-- | :-: | :-: | :-: |
 | `toolsLang` | 翻译工具在使用过程中终端输出的提示语言 | `en` \| `zh-CN` | `zh-CN` | 否 |
 | `proxy` | 使用 Google 翻译，需要网络代理，如果您所在的国家能直接使用 Google 就可以不填 proxy 配置项 | [Proxy](#proxy) | undefined | 否 |
@@ -217,7 +213,7 @@ table th {
 
 ### `TargetConfig`
 
-| 属性 | 描述 | 类型 | 是否必填 |
+| 属性 | 描述 | 类型 | 必填 |
 | :-: | :--: | :-: | :-: |
 | `targetLang` | 翻译输出的目标语言 | [Lang](#lang) | 是 |
 | `outPath` |  翻译后文件输出路径，后缀名可以是js\|ts\|json，也可以是目录，输出时如果没有目标文件则自动生成，如果有则增量更新 | string | 是 |

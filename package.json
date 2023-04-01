@@ -1,6 +1,6 @@
 {
   "name": "language-translate",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "A plug-in that can translate ts/js/json multilingual files online and generate or insert specified files in batches",
   "scripts": {
     "build": "rimraf ./dist && tsc"
@@ -66,5 +66,6 @@
     "@types/tunnel": "^0.0.3",
     "rimraf": "^3.0.2",
     "typescript": "^4.7.4"
-  }
+  },
+  "keywords": ["translation", "translate", "google-translate", "language-translate", "i18n-json-translation"]
 }

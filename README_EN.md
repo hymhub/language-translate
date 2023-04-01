@@ -190,11 +190,7 @@ locales
 You can also output the translation results to another folder, just change the `outPath`, more usages are waiting for you to unlock, you can also combine [FAQ](#faq) output selection to make more tricks, the project [example](https://github.com/hymhub/language-translate/tree/main/example) directory also provides some simple examples
 
 ## Config API
-<style>
-table th {
-  white-space: nowrap;
-}
-</style>
+
 ### `translate.config.(js|ts)`
 
 | Attribute | Description | Type | Default | Required |
