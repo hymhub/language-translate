@@ -121,7 +121,9 @@ Not surprisingly, you can already see `de.json`, `ko.json`, `zh.json` in `locale
 Afterwards, when there is a new copy that needs to be translated, you only need to modify the content of the `fromPath` file (that is, `translate.entry.json` in the example), and then execute `npm run translate` to achieve incremental updates
 
 ## Advanced usage
-The `fromPath` in the configuration is based on [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax), so it supports dynamic parsing, such as recursively translating the entire folder
+
+The `fromPath` in the configuration is based on [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax), so it supports dynamic analysis, such as recursively translating the whole folder with `.en.json` end of file
+
 ```js
 // translate.config.js
 import { Lang } from 'language-translate/types';
@@ -134,7 +136,7 @@ export default defineConfig({
     port: 7890,
   },
   fromLang: Lang.en,
-  fromPath: 'locales/**/*.json',
+  fromPath: 'locales/**/*en.json',
   translate: [
     {
       label: 'Recursively translate json files in folders and rewrite file names',

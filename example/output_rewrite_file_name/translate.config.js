@@ -8,7 +8,7 @@ export default defineConfig({
     port: 7890,
   },
   fromLang: Lang.en,
-  fromPath: 'locales/**/*.json',
+  fromPath: 'locales/**/*.en.json',
   translate: [
     {
       label: '输出重写文件名/Output rewrite file name',

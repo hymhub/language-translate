@@ -120,7 +120,7 @@ npm run translate
 此后有新文案需要翻译时，只需要修改 `fromPath` 文件内容(即示例中`translate.entry.json`)，再执行 `npm run translate` 即可实现增量更新
 
 ## 高级用法
-配置中的 `fromPath` 是基于 [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) 的，所以支持动态解析，例如递归翻译整个文件夹
+配置中的 `fromPath` 是基于 [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) 的，所以支持动态解析，例如递归翻译整个文件夹下以 `.en.json` 结尾的文件
 ```js
 // translate.config.js
 import { Lang } from 'language-translate/types';
@@ -132,7 +132,7 @@ export default defineConfig({
     port: 7890,
   },
   fromLang: Lang.en,
-  fromPath: 'locales/**/*.json',
+  fromPath: 'locales/**/*.en.json',
   translate: [
     {
       label: '递归翻译文件夹内json文件并重写文件名',
