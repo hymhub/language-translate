@@ -1,0 +1,10 @@
+{
+	"hello":"Hallo{{{name}}}, wie geht es dir heute?",
+	"button":{
+		"confirm":"bestätigen",
+		"cancel":"stornieren"
+	},
+	"header":{
+		"login":"Anmeldung"
+	}
+}

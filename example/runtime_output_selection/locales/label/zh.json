@@ -1,0 +1,10 @@
+{
+	"hello":"你好{{{name}}}， 你今天怎么样？",
+	"button":{
+		"confirm":"确认",
+		"cancel":"取消"
+	},
+	"header":{
+		"login":"登录"
+	}
+}

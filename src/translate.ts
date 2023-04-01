@@ -1,7 +1,7 @@
 import googleTranslate from "@vitalets/google-translate-api";
 import tunnel from "tunnel";
 import { ls } from "./locales.js";
-import { consoleError, consoleLog, consoleSuccess, consoleWarn, createJsonBuffer, getRootPath, mergeJson } from './utils.js';
+import { consoleError, consoleLog, consoleSuccess, consoleWarn, createJsonBuffer, isFilePath, mergeJson } from './utils.js';
 import { Proxy, Lang } from './types';
 import fs from 'fs';
 import path from 'path';
@@ -20,6 +20,9 @@ export const translate = async ({
   toolsLang?: 'en' | 'zh-CN';
   proxy?: Proxy;
 }) => {
+  if (!isFilePath(input)) {
+    return;
+  }
   const translator = (key: string): Promise<string> =>
     new Promise((resolve, reject) => {
       let failedNum = 0;
@@ -67,10 +70,10 @@ export const translate = async ({
     }
     inputStartStr += sourceText.slice(0, sourceText.indexOf('{'));
   } catch (error) {
-    consoleError(ls[toolsLang].checkFromPath + "\n path ---> " +input+ '\n' + error)
+    consoleError(ls[toolsLang].checkFromPath + "\n path ---> " + input + '\n' + error)
     return;
   }
-  sourceText = sourceText.slice(sourceText.indexOf('{'), sourceText.lastIndexOf('}')+1);
+  sourceText = sourceText.slice(sourceText.indexOf('{'), sourceText.lastIndexOf('}') + 1);
   let sourceJson: { [x: string]: any } = {};
   sourceText = "sourceJson = " + sourceText;
   try {
@@ -84,37 +87,8 @@ export const translate = async ({
     return;
   }
   // ------readSourceJson end-------
-  const outPutFullPath = path.join(getRootPath(), output);
-  // ------read out json start-----
-  let startStr = '';
-  const funValues: string[] = [];
-  let outFile;
-  let outTextJson: { [x: string]: any } = {};
-  try {
-    outFile = fs.readFileSync(path.join(getRootPath(), output), "utf8");
-    try {
-      if (outFile.includes('export')) {
-        startStr = outFile.slice(0, outFile.indexOf('export'));
-        outFile = outFile.slice(outFile.indexOf('export'));
-      }
-      startStr += outFile.slice(0, outFile.indexOf('{'));
-      outFile = outFile.slice(outFile.indexOf('{'), outFile.lastIndexOf('}')+1);
-      outFile = outFile.replace(/['"`a-zA-Z0-9_]+:.*(\(.+\).*=>|function[\s\S]+?return)[\s\S]+?,\n/g, (v: string) => {
-        funValues.push(v);
-        return '';
-      });
-      outFile = "outTextJson = " + outFile;
-      eval(`(${outFile})`);
-    } catch (error) {
-      consoleError(ls[toolsLang].targetErr + "\n path ---> " +outPutFullPath+ '\n' + error)
-      return
-    }
-  } catch (error) {
-    // readFileSync error
-  }
-  // ------read out json end-----
-  const translateRun = async (jsonObj: {[key: string]: any}) => {
-    const resJsonObj: {[key: string]: any} = {};
+  const translateRun = async (jsonObj: { [key: string]: any }) => {
+    const resJsonObj: { [key: string]: any } = {};
     for (const key in jsonObj) {
       const text = jsonObj[key];
       if (typeof text === 'string') {
@@ -152,19 +126,47 @@ export const translate = async ({
     return resJsonObj;
   }
   const resJson = await translateRun(sourceJson);
+  // ------read out json start-----
+  let startStr = '';
+  const funValues: string[] = [];
+  let outFile;
+  let outTextJson: { [x: string]: any } = {};
+  try {
+    outFile = fs.readFileSync(output, "utf8");
+    try {
+      if (outFile.includes('export')) {
+        startStr = outFile.slice(0, outFile.indexOf('export'));
+        outFile = outFile.slice(outFile.indexOf('export'));
+      }
+      startStr += outFile.slice(0, outFile.indexOf('{'));
+      outFile = outFile.slice(outFile.indexOf('{'), outFile.lastIndexOf('}') + 1);
+      outFile = outFile.replace(/['"`a-zA-Z0-9_]+:.*(\(.+\).*=>|function[\s\S]+?return)[\s\S]+?,\n/g, (v: string) => {
+        funValues.push(v);
+        return '';
+      });
+      outFile = "outTextJson = " + outFile;
+      eval(`(${outFile})`);
+    } catch (error) {
+      consoleError(ls[toolsLang].targetErr + "\n path ---> " + output + '\n' + error)
+      return
+    }
+  } catch (error) {
+    // readFileSync error
+  }
+  // ------read out json end-----
   let outPutBuffer = (outFile ? startStr : inputStartStr) + '{\n';
   funValues.forEach(item => {
     outPutBuffer += `\t${item}`;
   });
   if (outFile) {
     outPutBuffer += createJsonBuffer(mergeJson(outTextJson, resJson)).slice(2);
-    fs.writeFileSync(outPutFullPath, outPutBuffer);
-    consoleLog(`${ls[toolsLang].patchSuccess} --> ${outPutFullPath}`);
+    fs.writeFileSync(output, outPutBuffer);
+    consoleLog(`${ls[toolsLang].patchSuccess} --> ${output}`);
   } else {
     outPutBuffer += createJsonBuffer(resJson).slice(2);
-    const outDirname = path.dirname(outPutFullPath);
+    const outDirname = path.dirname(output);
     fs.existsSync(outDirname) || fs.mkdirSync(outDirname, { recursive: true });
-    fs.writeFileSync(outPutFullPath, outPutBuffer);
-    consoleLog(`${ls[toolsLang].createSuccess} --> ${outPutFullPath}`);
+    fs.writeFileSync(output, outPutBuffer);
+    consoleLog(`${ls[toolsLang].createSuccess} --> ${output}`);
   }
 };

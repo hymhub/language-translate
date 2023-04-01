@@ -60,6 +60,18 @@ export const mergeJson = (json1, json2) => {
     }
     return json1;
 };
+export const isFilePath = (path) => {
+    return /(\.json|\.js|\.ts)$/.test(path);
+};
+export const getOutPath = (it, duplicateRemovalEntries, idx, entryPath) => {
+    return isFilePath(it.outPath)
+        ? typeis(it.rewrite) === DataTypes.function
+            ? path.join(getRootPath(), path.dirname(it.outPath), it.rewrite(path.basename(entryPath)))
+            : path.join(getRootPath(), it.outPath)
+        : typeis(it.rewrite) === DataTypes.function
+            ? path.join(getRootPath(), it.outPath, duplicateRemovalEntries[idx].includes('/') ? path.dirname(duplicateRemovalEntries[idx]) : '', it.rewrite(path.basename(entryPath)))
+            : path.join(getRootPath(), it.outPath, duplicateRemovalEntries[idx]);
+};
 export const consoleSuccess = (...msg) => console.log(chalk.green(...msg));
 export const consoleLog = (...msg) => console.log(chalk.blue(...msg));
 export const consoleWarn = (...msg) => console.log(chalk.yellow(...msg));

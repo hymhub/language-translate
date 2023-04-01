@@ -1,4 +1,4 @@
-import type { ExportConfig } from "./types";
+import type { ExportConfig, TargetConfig } from "./types";
 import fs from "fs";
 import path from "path";
 import chalk from "chalk";
@@ -68,6 +68,25 @@ export const mergeJson = (
     }
   }
   return json1;
+}
+
+export const isFilePath = (path: string) => {
+  return /(\.json|\.js|\.ts)$/.test(path);
+}
+
+export const getOutPath = (it: TargetConfig, duplicateRemovalEntries: string[], idx: number, entryPath: string) => {
+  return isFilePath(it.outPath)
+    ? typeis(it.rewrite) === DataTypes.function
+      ? path.join(getRootPath(), path.dirname(it.outPath), it.rewrite!(path.basename(entryPath)))
+      : path.join(getRootPath(), it.outPath)
+    : typeis(it.rewrite) === DataTypes.function
+      ? path.join(
+        getRootPath(),
+        it.outPath,
+        duplicateRemovalEntries[idx].includes('/') ? path.dirname(duplicateRemovalEntries[idx]) : '',
+        it.rewrite!(path.basename(entryPath))
+      )
+      : path.join(getRootPath(), it.outPath, duplicateRemovalEntries[idx]);
 }
 
 export const consoleSuccess = (...msg: string[]) =>

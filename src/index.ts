@@ -2,10 +2,11 @@ import { loadConfig } from "unconfig";
 import type { ExportConfig, TargetConfig, Lang } from "./types";
 import { Command } from 'commander';
 import { translate } from "./translate.js";
-import { consoleError, getRootPath } from './utils.js';
+import { consoleError, getOutPath, getRootPath, isFilePath } from './utils.js';
 import { ls } from "./locales.js";
 import inquirer from 'inquirer';
 import path from 'path';
+import fg from 'fast-glob';
 
 const program = new Command();
 
@@ -55,14 +56,32 @@ program.description('Translate a single js/ts/json file')
         sources: [
           {
             files: "translate.config",
-            extensions: ["ts", "js", "json", ""],
+            extensions: ["ts", "js"],
           },
         ],
       });
       config.toolsLang = config.toolsLang || 'zh-CN';
       config.fromPath = config.fromPath
-        ? path.join(getRootPath(), config.fromPath)
-        : path.join(getRootPath(), 'translate.entry.json')
+        ? config.fromPath
+        : 'translate.entry.json'
+      const entries = fg.sync(config.fromPath, { dot: true, cwd: getRootPath() });
+      let duplicateRemovalEntries: string[] = [];
+      const tmpEntries = entries.map((v, idx) => v.split('/'));
+      duplicateRemovalEntries = tmpEntries.map(
+        (v) => v.filter((childV, childIdx) => {
+          if (childIdx === v.length - 1) {
+            return true;
+          }
+          let repeat = true;
+          for (let i = 0; i < tmpEntries.length; i++) {
+            if (tmpEntries[i][childIdx] !== childV) {
+              repeat = false;
+              break;
+            }
+          }
+          return !repeat;
+        }).join('/')
+      );
       const checkCustomKey = [{
         type: "list",
         message: ls[config.toolsLang].customOutConfig,
@@ -77,26 +96,32 @@ program.description('Translate a single js/ts/json file')
           .prompt(checkCustomKey)
           .then(({ targetConfig }: { targetConfig: TargetConfig[] }) => {
             targetConfig.forEach(it => {
-              translate({
-                input: config.fromPath!,
-                output: it.outPath,
-                fromLang: config.fromLang,
-                targetLang: it.targetLang,
-                toolsLang: config.toolsLang,
-                proxy: config.proxy,
-              });
+              entries.forEach((entryPath, idx) => {
+                const outPath = getOutPath(it, duplicateRemovalEntries, idx, entryPath);
+                translate({
+                  input: path.join(getRootPath(), entryPath),
+                  output: outPath,
+                  fromLang: config.fromLang,
+                  targetLang: it.targetLang,
+                  toolsLang: config.toolsLang,
+                  proxy: config.proxy,
+                });
+              })
             })
           })
-      } else if(config.translate.length === 1) {
+      } else if (config.translate.length === 1) {
         config.translate[0].targetConfig.forEach(it => {
-          translate({
-            input: config.fromPath!,
-            output: it.outPath,
-            fromLang: config.fromLang,
-            targetLang: it.targetLang,
-            toolsLang: config.toolsLang,
-            proxy: config.proxy,
-          });
+          entries.forEach((entryPath, idx) => {
+            const outPath = getOutPath(it, duplicateRemovalEntries, idx, entryPath);
+            translate({
+              input: path.join(getRootPath(), entryPath),
+              output: outPath,
+              fromLang: config.fromLang,
+              targetLang: it.targetLang,
+              toolsLang: config.toolsLang,
+              proxy: config.proxy,
+            });
+          })
         })
       } else {
         consoleError(ls[config.toolsLang].checkConfig);

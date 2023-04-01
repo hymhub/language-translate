@@ -1,0 +1,9 @@
+{
+  "body": "body",
+  "hello": "hello {{{name}}}, How are you today?",
+  "cool": "cool",
+  "number": {
+    "one": "one",
+    "two": "two"
+  }
+}

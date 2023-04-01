@@ -1,6 +1,6 @@
 # language-translate
 
-A plug-in that translates ts/js/json multilingual files online and generates or inserts specified files in batches, supports incremental updates, can use bash to translate a single file, and can also be integrated in the project for continuous batch translation
+language-translate is a plug-in that converts ts/js/json multilingual files online based on Google Translate and generates or inserts specified files in batches. It supports incremental updates, can use bash to translate a single file, and can also be integrated in the project for continuous batch translation , support single file to single file, single file to multiple files, multiple files to multiple files, multiple files to single file
 
 [中文](./README.md) ｜ [English](./README_EN.md)
 <p align="center">
@@ -37,9 +37,9 @@ A plug-in that translates ts/js/json multilingual files online and generates or 
 
 ## Usage
 
-Create `translate.config.(js|ts|json)` in your project root directory for configuration
+Create `translate.config.(js|ts)` in your project root directory for configuration
 
-js|ts Configuration example:
+js Configuration example:
 ```js
 // translate.config.js
 import { Lang } from 'language-translate/types';
@@ -89,6 +89,7 @@ For example, in the root directory create `translate.entry.json`
   }
 }
 ```
+Note: After translation, the interpolation expression in i18n will be retained in the result, such as the above `{{name}}` but only `{{}}` is supported
 
 Add scripts command to `package.json`
 
@@ -106,7 +107,7 @@ npm run translate
 
 Not surprisingly, you can already see `de.json`, `ko.json`, `zh.json` in `locales` in the root directory
 
-```
+```md
 |-- Your Project Name
   |-- locales
     |-- de.json
@@ -119,16 +120,87 @@ Not surprisingly, you can already see `de.json`, `ko.json`, `zh.json` in `locale
 
 Afterwards, when there is a new copy that needs to be translated, you only need to modify the content of the `fromPath` file (that is, `translate.entry.json` in the example), and then execute `npm run translate` to achieve incremental updates
 
-## Config API
+## Advanced usage
+The `fromPath` in the configuration is based on [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax), so it supports dynamic parsing, such as recursively translating the entire folder
+```js
+// translate.config.js
+import { Lang } from 'language-translate/types';
+import { defineConfig } from 'language-translate/utils';
 
-### `translate.config.(js|ts|json)`
+export default defineConfig({
+  toolsLang: 'en',
+  proxy: {
+    host: '127.0.0.1',
+    port: 7890,
+  },
+  fromLang: Lang.en,
+  fromPath: 'locales/**/*.json',
+  translate: [
+    {
+      label: 'Recursively translate json files in folders and rewrite file names',
+      targetConfig: [
+        {
+          targetLang: Lang.de,
+          outPath: 'locales',
+          rewrite: fileName => fileName.replace('.en.json', '.de.json'),
+        },
+        {
+          targetLang: Lang['zh-CN'],
+          outPath: 'locales',
+          rewrite: fileName => fileName.replace('.en.json', '.zh.json'),
+        },
+        {
+          targetLang: Lang.ko,
+          outPath: 'locales',
+          rewrite: fileName => fileName.replace('.en.json', '.ko.json'),
+        },
+      ]
+    },
+  ]
+})
+```
+`locales` directory structure before translation
+```md
+locales
+├─com.en.json
+├─header.en.json
+├─children
+|    ├─color.en.json
+```
+The translated `locales` directory structure
+```md
+locales
+├─com.de.json
+├─com.en.json
+├─com.ko.json
+├─com.zh.json
+├─header.de.json
+├─header.en.json
+├─header.ko.json
+├─header.zh.json
+├─children
+|    ├─color.de.json
+|    ├─color.en.json
+|    ├─color.ko.json
+|    └─color.zh.json
+```
+
+You can also output the translation results to another folder, just change the `outPath`, more usages are waiting for you to unlock, you can also combine [FAQ](#faq) output selection to make more tricks, the project [example](https://github.com/hymhub/language-translate/tree/main/example) directory also provides some simple examples
+
+## Config API
+<style>
+table th {
+  white-space: nowrap;
+}
+</style>
+### `translate.config.(js|ts)`
 
 | Attribute | Description | Type | Default | Required |
 | :-: | :-- | :-: | :-: | :-: |
 | `toolsLang` | The prompt language output by the terminal during the use of the translation tool | `en` \| `zh-CN` | `zh-CN` | No |
 | `proxy` | To use Google Translate, a network proxy is required. If your country can directly use Google, you don’t need to fill in the proxy configuration item | [Proxy](#proxy) | undefined | No |
 | `fromLang` | The language of the document to be translated | [Lang](#lang) | - | Yes |
-| `fromPath` | The path of the file to be translated, the suffix can be js\|ts\|json | string | `translate.entry.json` | No |
+| `fromPath` | The path of the file to be translated, based on [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax), supports dynamic parsing, and the suffix name can be js\|ts\|json | string | `translate.entry.json` | No |
 | `translate` | Translation output configuration, multiple options can be configured when starting translation | [Translate](#translate)[] | - | Yes |
 
 ### `Proxy`
@@ -147,10 +219,11 @@ Afterwards, when there is a new copy that needs to be translated, you only need 
 
 ### `TargetConfig`
 
-| Attribute | Description | Type |
-| :-: | :--: | :-: |
-| `targetLang` | Target language for translation output | [Lang](#lang) |
-| `outPath` |  The output path of the translated file, the suffix can be js\|ts\|json, if there is no target file, it will be automatically generated, if there is, it will be incrementally updated | string |
+| Attribute | Description | Type | Required |
+| :-: | :--: | :-: | :-: |
+| `targetLang` | Target language for translation output | [Lang](#lang) | Yes |
+| `outPath` | The output path of the translated file. The suffix name can be js\|ts\|json or a directory. If there is no target file during output, it will be automatically generated, and if there is, it will be incrementally updated | string | Yes |
+| `rewrite` | Optional value, the callback function can be passed in to rewrite the file name when outputting, the formal parameter will pass in the original file name, and the return value is the final output file name | Callback<br/>`(fileName: string) => string;` | No |
 
 ### `Lang`
 
@@ -214,6 +287,8 @@ Afterwards, when there is a new copy that needs to be translated, you only need 
 | Hindi | hi |
 | Urdu | ur |
 | Indonesian | id |
+
+If the language you need is not in the `Lang` configuration, you can directly pass in the language code supported by Google Translate
 
 ## FAQ
 

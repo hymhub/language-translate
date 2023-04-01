@@ -125,6 +125,7 @@ export interface Proxy {
 export interface TargetConfig {
   targetLang: Lang;
   outPath: string;
+  rewrite?: (fileName: string) => string;
 }
 
 export interface Translate {

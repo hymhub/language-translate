@@ -1,6 +1,6 @@
 # language-translate
 
-一款在线翻译ts/js/json多语言文件并批量生成或插入指定文件的插件，支持增量更新，可使用 bash 翻译单个文件，也能集成在项目中持续批量翻译
+language-translate 是一款基于 Google 翻译在线转换 ts/js/json 多语言文件并批量生成或插入指定文件的插件，支持增量更新，可使用 bash 翻译单个文件，也能集成在项目中持续批量翻译，支持单文件转单文件，单文件转多文件，多文件转多文件，多文件转单文件
 
 [中文](./README.md) ｜ [English](./README_EN.md)
 <p align="center">
@@ -37,9 +37,9 @@
 
 ## 使用
 
-在您的项目根目录下创建 `translate.config.(js|ts|json)` 进行配置
+在您的项目根目录下创建 `translate.config.(js|ts)` 进行配置
 
-js|ts 配置示例:
+js 配置示例:
 ```js
 // translate.config.js
 import { Lang } from 'language-translate/types';
@@ -88,6 +88,7 @@ export default defineConfig({
   }
 }
 ```
+注意: 翻译后会在结果保留 i18n 中的插值表达式，例如上述 `{{name}}` 但仅支持 `{{}}` 这一种语法
 
 在 `package.json` 中加入 scripts 命令
 
@@ -105,7 +106,7 @@ npm run translate
 
 不出意外已经可以在根目录下 `locales` 内看到 `de.json`、`ko.json`、`zh.json`
 
-```
+```md
 |-- Your Project Name
   |-- locales
     |-- de.json
@@ -118,16 +119,86 @@ npm run translate
 
 此后有新文案需要翻译时，只需要修改 `fromPath` 文件内容(即示例中`translate.entry.json`)，再执行 `npm run translate` 即可实现增量更新
 
-## 配置API
+## 高级用法
+配置中的 `fromPath` 是基于 [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) 的，所以支持动态解析，例如递归翻译整个文件夹
+```js
+// translate.config.js
+import { Lang } from 'language-translate/types';
+import { defineConfig } from 'language-translate/utils';
 
-### `translate.config.(js|ts|json)`
+export default defineConfig({
+  proxy: {
+    host: '127.0.0.1',
+    port: 7890,
+  },
+  fromLang: Lang.en,
+  fromPath: 'locales/**/*.json',
+  translate: [
+    {
+      label: '递归翻译文件夹内json文件并重写文件名',
+      targetConfig: [
+        {
+          targetLang: Lang.de,
+          outPath: 'locales',
+          rewrite: fileName => fileName.replace('.en.json', '.de.json'),
+        },
+        {
+          targetLang: Lang['zh-CN'],
+          outPath: 'locales',
+          rewrite: fileName => fileName.replace('.en.json', '.zh.json'),
+        },
+        {
+          targetLang: Lang.ko,
+          outPath: 'locales',
+          rewrite: fileName => fileName.replace('.en.json', '.ko.json'),
+        },
+      ]
+    },
+  ]
+})
+```
+翻译前 `locales` 目录结构
+```md
+locales
+├─com.en.json
+├─header.en.json
+├─children
+|    ├─color.en.json
+```
+翻译后 `locales` 目录结构
+```md
+locales
+├─com.de.json
+├─com.en.json
+├─com.ko.json
+├─com.zh.json
+├─header.de.json
+├─header.en.json
+├─header.ko.json
+├─header.zh.json
+├─children
+|    ├─color.de.json
+|    ├─color.en.json
+|    ├─color.ko.json
+|    └─color.zh.json
+```
+
+也可以将翻译结果输出到另一个文件夹，只需要更改 `outPath` 即可，更多用法等你解锁哦，也可结合[FAQ](#faq)输出可选做出更多花样，项目 [example](https://github.com/hymhub/language-translate/tree/main/example) 目录中也提供了一些简单示例
+
+## 配置API
+<style>
+table th {
+  white-space: nowrap;
+}
+</style>
+### `translate.config.(js|ts)`
 
 | 属性 | 描述 | 类型 | 默认值 | 是否必填 |
 | :-: | :-- | :-: | :-: | :-: |
-| `toolsLang` | 翻译工具在使用过程中终端输出的提示语言 | `en` \| `zh-CN` | `zh-CN` | &emsp;&emsp;否&emsp;&emsp; |
-| `proxy` | 使用 Google 翻译，需要网络代理，如果您所在的国家能直接使用 Google 就可以不填 proxy 配置项 | [Proxy](#proxy) | undefined | &emsp;&emsp;否&emsp;&emsp; |
+| `toolsLang` | 翻译工具在使用过程中终端输出的提示语言 | `en` \| `zh-CN` | `zh-CN` | 否 |
+| `proxy` | 使用 Google 翻译，需要网络代理，如果您所在的国家能直接使用 Google 就可以不填 proxy 配置项 | [Proxy](#proxy) | undefined | 否 |
 | `fromLang` | 待翻译文件所使用语言 | [Lang](#lang) | - | 是 |
-| `fromPath` | 待翻译文件路径，后缀名可以是 js\|ts\|json | string | `translate.entry.json` | 否 |
+| `fromPath` | 待翻译文件路径，基于 [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax)，支持动态解析，后缀名可以是 js\|ts\|json | string | `translate.entry.json` | 否 |
 | `translate` | 翻译输出配置，可配置多项在开始翻译时进行选择 | [Translate](#translate)[] | - | 是 |
 
 ### `Proxy`
@@ -146,10 +217,11 @@ npm run translate
 
 ### `TargetConfig`
 
-| 属性 | 描述 | 类型 |
-| :-: | :--: | :-: |
-| `targetLang` | 翻译输出的目标语言 | [Lang](#lang) |
-| `outPath` |  翻译后文件输出路径，后缀名可以是js\|ts\|json，如果没有目标文件则自动生成，如果有则增量更新 | string |
+| 属性 | 描述 | 类型 | 是否必填 |
+| :-: | :--: | :-: | :-: |
+| `targetLang` | 翻译输出的目标语言 | [Lang](#lang) | 是 |
+| `outPath` |  翻译后文件输出路径，后缀名可以是js\|ts\|json，也可以是目录，输出时如果没有目标文件则自动生成，如果有则增量更新 | string | 是 |
+| `rewrite` | 可选值，传入回调函数可在输出时重写文件名，形参会传入原始文件名，返回值是最终输出文件名 | Callback<br/>`(fileName: string) => string;` | 否 |
 
 ### `Lang`
 
@@ -213,6 +285,8 @@ npm run translate
 | 印地语 | hi |
 | 印度乌尔都语 | ur |
 | 印尼语 | id |
+
+如果 `Lang` 配置中没有您需要的语言，您可以直接传入 Google 翻译支持的语言代码
 
 ## FAQ
 

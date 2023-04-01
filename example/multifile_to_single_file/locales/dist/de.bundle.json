@@ -1,0 +1,16 @@
+{
+	"confirm":"bestätigen",
+	"cancel":"stornieren",
+	"logo":"Logo",
+	"user":"Benutzerin",
+	"red":"Rot",
+	"blue":"Blau",
+	"green":"Grün",
+	"body":"Körper",
+	"hello":"Hallo{{{name}}}, Wie geht es dir heute?",
+	"cool":"Cool",
+	"number":{
+		"one":"eins",
+		"two":"zwei"
+	}
+}

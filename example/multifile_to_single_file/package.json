@@ -1,0 +1,15 @@
+{
+  "name": "multifile_to_single_file",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "translate": "translate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "language-translate": "^2.1.0"
+  }
+}

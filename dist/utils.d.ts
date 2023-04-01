@@ -1,4 +1,4 @@
-import type { ExportConfig } from "./types";
+import type { ExportConfig, TargetConfig } from "./types";
 export declare const getRootPath: () => string;
 export declare const defineConfig: (config: ExportConfig) => ExportConfig;
 export declare const getFile: (filePath: string) => string;
@@ -13,6 +13,8 @@ export declare const mergeJson: (json1: {
 }) => {
     [key: string]: any;
 };
+export declare const isFilePath: (path: string) => boolean;
+export declare const getOutPath: (it: TargetConfig, duplicateRemovalEntries: string[], idx: number, entryPath: string) => string;
 export declare const consoleSuccess: (...msg: string[]) => void;
 export declare const consoleLog: (...msg: string[]) => void;
 export declare const consoleWarn: (...msg: string[]) => void;
