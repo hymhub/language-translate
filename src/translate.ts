@@ -19,7 +19,7 @@ import {
   ApiKeyConfig,
   TranslateService,
   BaiduApiKeyConfig,
-} from "./types";
+} from "./types.js";
 import fs from "fs";
 import path from "path";
 export const translate = async ({
@@ -46,7 +46,11 @@ export const translate = async ({
     if (apiKeyConfig) {
       switch (apiKeyConfig.type) {
         case TranslateService.baidu:
-          return baiduTranslator(key, <BaiduApiKeyConfig>apiKeyConfig);
+          const bTranslator = new baiduTranslater(
+            (<BaiduApiKeyConfig>apiKeyConfig).appId,
+            (<BaiduApiKeyConfig>apiKeyConfig).appKey
+          );
+          return baiduTranslator(key, bTranslator);
         default:
           break;
       }
@@ -96,16 +100,12 @@ export const translate = async ({
 
   const baiduTranslator = (
     key: string,
-    baiduApiKeyConfig: BaiduApiKeyConfig
+    baiduTranslater: baiduTranslater
   ): Promise<string> => {
-    const bTranslator = new baiduTranslater(
-      baiduApiKeyConfig.appId,
-      baiduApiKeyConfig.appKey
-    );
     return new Promise((resolve, reject) => {
       let failedNum = 0;
       const run = () => {
-        bTranslator
+        baiduTranslater
           .translate(key, {
             // @ts-ignore
             from: getBaiduLangCode(fromLang),
@@ -118,9 +118,11 @@ export const translate = async ({
           .catch((err) => {
             if (++failedNum > 10) {
               consoleError(ls[toolsLang].checkNetwork);
+              consoleError(err);
               reject(err);
             } else {
               consoleWarn(ls[toolsLang].retry);
+              consoleError(err);
               setTimeout(() => {
                 run();
               }, 1000);

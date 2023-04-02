@@ -1,5 +1,5 @@
-import type { ExportConfig, TargetConfig } from "./types";
-import { Lang } from "./types";
+import type { ExportConfig, TargetConfig } from "./types.js";
+import { Lang } from "./types.js";
 export declare const getRootPath: () => string;
 export declare const defineConfig: (config: ExportConfig) => ExportConfig;
 export declare const getFile: (filePath: string) => string;
