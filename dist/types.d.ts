@@ -96,9 +96,21 @@ export declare enum Lang {
     "ur" = "ur",
     "id" = "id"
 }
+export declare enum TranslateService {
+    baidu = "baidu",
+    google = "google"
+}
 export interface Proxy {
     host: string;
     port: number;
+}
+export interface ApiKeyConfig {
+    type: TranslateService;
+}
+export interface BaiduApiKeyConfig extends ApiKeyConfig {
+    type: TranslateService.baidu;
+    appId: string;
+    appKey: string;
 }
 export interface TargetConfig {
     targetLang: Lang;
@@ -113,8 +125,9 @@ export interface ExportConfig {
     /**
      * @default en
      */
-    toolsLang?: 'en' | 'zh-CN';
+    toolsLang?: "en" | "zh-CN";
     proxy?: Proxy;
+    apiKeyConfig?: ApiKeyConfig;
     fromLang: Lang;
     fromPath?: string;
     translate: Translate[];

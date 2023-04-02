@@ -52,6 +52,7 @@
   "homepage": "https://github.com/hymhub/language-translate#readme",
   "dependencies": {
     "@vitalets/google-translate-api": "^8.0.0",
+    "baidu-fanyi": "^0.0.3",
     "chalk": "^5.2.0",
     "commander": "^10.0.0",
     "fast-glob": "^3.2.12",
@@ -67,5 +68,11 @@
     "rimraf": "^3.0.2",
     "typescript": "^4.7.4"
   },
-  "keywords": ["translation", "translate", "google-translate", "language-translate", "i18n-json-translation"]
+  "keywords": [
+    "translation",
+    "translate",
+    "google-translate",
+    "language-translate",
+    "i18n-json-translation"
+  ]
 }
