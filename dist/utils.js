@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import chalk from "chalk";
 import { DataTypes, typeis } from "typeof-plus";
-import { Lang } from "./types";
+import { Lang } from "./types.js";
 const cwd = process.cwd();
 export const getRootPath = () => cwd;
 export const defineConfig = (config) => {
