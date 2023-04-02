@@ -117,3 +117,8 @@ export var Lang;
     /* Indonesian/印尼语 */
     Lang["id"] = "id";
 })(Lang || (Lang = {}));
+export var TranslateService;
+(function (TranslateService) {
+    TranslateService["baidu"] = "baidu";
+    TranslateService["google"] = "google";
+})(TranslateService || (TranslateService = {}));
