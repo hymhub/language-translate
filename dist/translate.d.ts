@@ -1,4 +1,4 @@
-import { Proxy, Lang, ApiKeyConfig } from "./types";
+import { Proxy, Lang, ApiKeyConfig } from "./types.js";
 export declare const translate: ({ input, output, fromLang, targetLang, toolsLang, proxy, apiKeyConfig, }: {
     input: string;
     output: string;

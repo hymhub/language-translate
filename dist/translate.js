@@ -3,7 +3,7 @@ import baiduTranslater from "baidu-fanyi";
 import tunnel from "tunnel";
 import { ls } from "./locales.js";
 import { consoleError, consoleLog, consoleSuccess, consoleWarn, createJsonBuffer, getBaiduLangCode, isFilePath, mergeJson, } from "./utils.js";
-import { TranslateService, } from "./types";
+import { TranslateService, } from "./types.js";
 import fs from "fs";
 import path from "path";
 export const translate = async ({ input, output, fromLang, targetLang, toolsLang = "zh-CN", proxy, apiKeyConfig, }) => {
@@ -14,7 +14,8 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
         if (apiKeyConfig) {
             switch (apiKeyConfig.type) {
                 case TranslateService.baidu:
-                    return baiduTranslator(key, apiKeyConfig);
+                    const bTranslator = new baiduTranslater(apiKeyConfig.appId, apiKeyConfig.appKey);
+                    return baiduTranslator(key, bTranslator);
                 default:
                     break;
             }
@@ -55,12 +56,11 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
         };
         run();
     });
-    const baiduTranslator = (key, baiduApiKeyConfig) => {
-        const bTranslator = new baiduTranslater(baiduApiKeyConfig.appId, baiduApiKeyConfig.appKey);
+    const baiduTranslator = (key, baiduTranslater) => {
         return new Promise((resolve, reject) => {
             let failedNum = 0;
             const run = () => {
-                bTranslator
+                baiduTranslater
                     .translate(key, {
                     // @ts-ignore
                     from: getBaiduLangCode(fromLang),
@@ -73,10 +73,12 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
                     .catch((err) => {
                     if (++failedNum > 10) {
                         consoleError(ls[toolsLang].checkNetwork);
+                        consoleError(err);
                         reject(err);
                     }
                     else {
                         consoleWarn(ls[toolsLang].retry);
+                        consoleError(err);
                         setTimeout(() => {
                             run();
                         }, 1000);

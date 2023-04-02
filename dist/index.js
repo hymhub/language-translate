@@ -91,6 +91,7 @@ program.description('Translate a single js/ts/json file')
                             targetLang: it.targetLang,
                             toolsLang: config.toolsLang,
                             proxy: config.proxy,
+                            apiKeyConfig: config.apiKeyConfig,
                         });
                     });
                 });
@@ -107,6 +108,7 @@ program.description('Translate a single js/ts/json file')
                         targetLang: it.targetLang,
                         toolsLang: config.toolsLang,
                         proxy: config.proxy,
+                        apiKeyConfig: config.apiKeyConfig,
                     });
                 });
             });
