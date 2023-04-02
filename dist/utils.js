@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import chalk from "chalk";
 import { DataTypes, typeis } from "typeof-plus";
+import { Lang } from "./types";
 const cwd = process.cwd();
 export const getRootPath = () => cwd;
 export const defineConfig = (config) => {
@@ -32,12 +33,12 @@ export const getFiles = (entry, deep) => {
 export const createJsonBuffer = (val, tN) => {
     tN = tN || 1;
     let outputBuffer = "{\n";
-    let t = '';
+    let t = "";
     for (let index = 0; index < tN; index++) {
-        t += '\t';
+        t += "\t";
     }
     for (const textKey in val) {
-        if (typeof val[textKey] === 'string') {
+        if (typeof val[textKey] === "string") {
             outputBuffer += `${t}${JSON.stringify({ [textKey]: val[textKey] }).slice(1, -1)},\n`;
         }
         else {
@@ -69,8 +70,25 @@ export const getOutPath = (it, duplicateRemovalEntries, idx, entryPath) => {
             ? path.join(getRootPath(), path.dirname(it.outPath), it.rewrite(path.basename(entryPath)))
             : path.join(getRootPath(), it.outPath)
         : typeis(it.rewrite) === DataTypes.function
-            ? path.join(getRootPath(), it.outPath, duplicateRemovalEntries[idx].includes('/') ? path.dirname(duplicateRemovalEntries[idx]) : '', it.rewrite(path.basename(entryPath)))
+            ? path.join(getRootPath(), it.outPath, duplicateRemovalEntries[idx].includes("/")
+                ? path.dirname(duplicateRemovalEntries[idx])
+                : "", it.rewrite(path.basename(entryPath)))
             : path.join(getRootPath(), it.outPath, duplicateRemovalEntries[idx]);
+};
+export const getBaiduLangCode = (lang) => {
+    switch (lang) {
+        case Lang["zh-CN"]:
+            return "zh";
+        case Lang["zh-TW"]:
+            return "cht";
+        case Lang.en:
+        default:
+            return lang.toString();
+        case Lang.ko:
+            return "kor";
+        case Lang.ja:
+            return "jp";
+    }
 };
 export const consoleSuccess = (...msg) => console.log(chalk.green(...msg));
 export const consoleLog = (...msg) => console.log(chalk.blue(...msg));

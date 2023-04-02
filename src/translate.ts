@@ -1,46 +1,80 @@
 import googleTranslate from "@vitalets/google-translate-api";
+import baiduTranslater from "baidu-fanyi";
+
 import tunnel from "tunnel";
 import { ls } from "./locales.js";
-import { consoleError, consoleLog, consoleSuccess, consoleWarn, createJsonBuffer, isFilePath, mergeJson } from './utils.js';
-import { Proxy, Lang } from './types';
-import fs from 'fs';
-import path from 'path';
+import {
+  consoleError,
+  consoleLog,
+  consoleSuccess,
+  consoleWarn,
+  createJsonBuffer,
+  getBaiduLangCode,
+  isFilePath,
+  mergeJson,
+} from "./utils.js";
+import {
+  Proxy,
+  Lang,
+  ApiKeyConfig,
+  TranslateService,
+  BaiduApiKeyConfig,
+} from "./types";
+import fs from "fs";
+import path from "path";
 export const translate = async ({
   input,
   output,
   fromLang,
   targetLang,
-  toolsLang = 'zh-CN',
+  toolsLang = "zh-CN",
   proxy,
+  apiKeyConfig,
 }: {
-  input: string,
-  output: string,
-  fromLang: Lang,
-  targetLang: Lang,
-  toolsLang?: 'en' | 'zh-CN';
+  input: string;
+  output: string;
+  fromLang: Lang;
+  targetLang: Lang;
+  toolsLang?: "en" | "zh-CN";
   proxy?: Proxy;
+  apiKeyConfig?: ApiKeyConfig;
 }) => {
   if (!isFilePath(input)) {
     return;
   }
-  const translator = (key: string): Promise<string> =>
+  const translator = (key: string): Promise<string> => {
+    if (apiKeyConfig) {
+      switch (apiKeyConfig.type) {
+        case TranslateService.baidu:
+          return baiduTranslator(key, <BaiduApiKeyConfig>apiKeyConfig);
+        default:
+          break;
+      }
+    }
+
+    return googleTranslator(key);
+  };
+
+  const googleTranslator = (key: string): Promise<string> =>
     new Promise((resolve, reject) => {
       let failedNum = 0;
       const run = () => {
         googleTranslate(
           key,
           { from: fromLang, to: targetLang },
-          proxy ? {
-            agent: tunnel.httpsOverHttp({
-              proxy: {
-                host: proxy.host,
-                port: proxy.port,
-                headers: {
-                  "User-Agent": "Node",
-                },
+          proxy
+            ? {
+                agent: tunnel.httpsOverHttp({
+                  proxy: {
+                    host: proxy.host,
+                    port: proxy.port,
+                    headers: {
+                      "User-Agent": "Node",
+                    },
+                  },
+                }),
               }
-            }),
-          } : undefined
+            : undefined
         )
           .then(({ text }) => {
             resolve(text);
@@ -59,28 +93,73 @@ export const translate = async ({
       };
       run();
     });
-  let inputStartStr = '';
+
+  const baiduTranslator = (
+    key: string,
+    baiduApiKeyConfig: BaiduApiKeyConfig
+  ): Promise<string> => {
+    const bTranslator = new baiduTranslater(
+      baiduApiKeyConfig.appId,
+      baiduApiKeyConfig.appKey
+    );
+    return new Promise((resolve, reject) => {
+      let failedNum = 0;
+      const run = () => {
+        bTranslator
+          .translate(key, {
+            // @ts-ignore
+            from: getBaiduLangCode(fromLang),
+            // @ts-ignore
+            to: getBaiduLangCode(targetLang),
+          })
+          .then((text) => {
+            resolve(text);
+          })
+          .catch((err) => {
+            if (++failedNum > 10) {
+              consoleError(ls[toolsLang].checkNetwork);
+              reject(err);
+            } else {
+              consoleWarn(ls[toolsLang].retry);
+              setTimeout(() => {
+                run();
+              }, 1000);
+            }
+          });
+      };
+      run();
+    });
+  };
+
+  let inputStartStr = "";
   // ------readSourceJson start-------
   let sourceText;
   try {
     sourceText = fs.readFileSync(input, "utf8");
-    if (sourceText.includes('export')) {
-      inputStartStr = sourceText.slice(0, sourceText.indexOf('export'));
-      sourceText = sourceText.slice(sourceText.indexOf('export'));
+    if (sourceText.includes("export")) {
+      inputStartStr = sourceText.slice(0, sourceText.indexOf("export"));
+      sourceText = sourceText.slice(sourceText.indexOf("export"));
     }
-    inputStartStr += sourceText.slice(0, sourceText.indexOf('{'));
+    inputStartStr += sourceText.slice(0, sourceText.indexOf("{"));
   } catch (error) {
-    consoleError(ls[toolsLang].checkFromPath + "\n path ---> " + input + '\n' + error)
+    consoleError(
+      ls[toolsLang].checkFromPath + "\n path ---> " + input + "\n" + error
+    );
     return;
   }
-  sourceText = sourceText.slice(sourceText.indexOf('{'), sourceText.lastIndexOf('}') + 1);
+  sourceText = sourceText.slice(
+    sourceText.indexOf("{"),
+    sourceText.lastIndexOf("}") + 1
+  );
   let sourceJson: { [x: string]: any } = {};
   sourceText = "sourceJson = " + sourceText;
   try {
     eval(`(${sourceText})`);
   } catch (error) {
-    consoleError(ls[toolsLang].sourceErr + '\npath ---> ' + input + '\n' + error);
-    return
+    consoleError(
+      ls[toolsLang].sourceErr + "\npath ---> " + input + "\n" + error
+    );
+    return;
   }
   if (Object.keys(sourceJson).length === 0) {
     consoleError(ls[toolsLang].sourceNull);
@@ -91,7 +170,7 @@ export const translate = async ({
     const resJsonObj: { [key: string]: any } = {};
     for (const key in jsonObj) {
       const text = jsonObj[key];
-      if (typeof text === 'string') {
+      if (typeof text === "string") {
         let resText = "";
         if (/\{\{.+?\}\}/.test(text)) {
           const texts = text.split(/\{\{.+?\}\}/g);
@@ -124,38 +203,46 @@ export const translate = async ({
       }
     }
     return resJsonObj;
-  }
+  };
   const resJson = await translateRun(sourceJson);
   // ------read out json start-----
-  let startStr = '';
+  let startStr = "";
   const funValues: string[] = [];
   let outFile;
   let outTextJson: { [x: string]: any } = {};
   try {
     outFile = fs.readFileSync(output, "utf8");
     try {
-      if (outFile.includes('export')) {
-        startStr = outFile.slice(0, outFile.indexOf('export'));
-        outFile = outFile.slice(outFile.indexOf('export'));
+      if (outFile.includes("export")) {
+        startStr = outFile.slice(0, outFile.indexOf("export"));
+        outFile = outFile.slice(outFile.indexOf("export"));
       }
-      startStr += outFile.slice(0, outFile.indexOf('{'));
-      outFile = outFile.slice(outFile.indexOf('{'), outFile.lastIndexOf('}') + 1);
-      outFile = outFile.replace(/['"`a-zA-Z0-9_]+:.*(\(.+\).*=>|function[\s\S]+?return)[\s\S]+?,\n/g, (v: string) => {
-        funValues.push(v);
-        return '';
-      });
+      startStr += outFile.slice(0, outFile.indexOf("{"));
+      outFile = outFile.slice(
+        outFile.indexOf("{"),
+        outFile.lastIndexOf("}") + 1
+      );
+      outFile = outFile.replace(
+        /['"`a-zA-Z0-9_]+:.*(\(.+\).*=>|function[\s\S]+?return)[\s\S]+?,\n/g,
+        (v: string) => {
+          funValues.push(v);
+          return "";
+        }
+      );
       outFile = "outTextJson = " + outFile;
       eval(`(${outFile})`);
     } catch (error) {
-      consoleError(ls[toolsLang].targetErr + "\n path ---> " + output + '\n' + error)
-      return
+      consoleError(
+        ls[toolsLang].targetErr + "\n path ---> " + output + "\n" + error
+      );
+      return;
     }
   } catch (error) {
     // readFileSync error
   }
   // ------read out json end-----
-  let outPutBuffer = (outFile ? startStr : inputStartStr) + '{\n';
-  funValues.forEach(item => {
+  let outPutBuffer = (outFile ? startStr : inputStartStr) + "{\n";
+  funValues.forEach((item) => {
     outPutBuffer += `\t${item}`;
   });
   if (outFile) {

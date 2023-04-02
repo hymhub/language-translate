@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import chalk from "chalk";
 import { DataTypes, typeis } from "typeof-plus";
+import { Lang } from "./types";
 
 const cwd = process.cwd();
 export const getRootPath = () => cwd;
@@ -37,18 +38,21 @@ export const getFiles = (entry: string, deep: boolean) => {
 export const createJsonBuffer = (val: { [key: string]: any }, tN?: number) => {
   tN = tN || 1;
   let outputBuffer = "{\n";
-  let t = '';
+  let t = "";
   for (let index = 0; index < tN; index++) {
-    t += '\t';
+    t += "\t";
   }
   for (const textKey in val) {
-    if (typeof val[textKey] === 'string') {
+    if (typeof val[textKey] === "string") {
       outputBuffer += `${t}${JSON.stringify({ [textKey]: val[textKey] }).slice(
         1,
         -1
       )},\n`;
     } else {
-      outputBuffer += `${t}"${textKey}":${createJsonBuffer(val[textKey], tN + 1)},\n`;
+      outputBuffer += `${t}"${textKey}":${createJsonBuffer(
+        val[textKey],
+        tN + 1
+      )},\n`;
     }
   }
   outputBuffer = outputBuffer.slice(0, -2);
@@ -57,7 +61,8 @@ export const createJsonBuffer = (val: { [key: string]: any }, tN?: number) => {
 };
 
 export const mergeJson = (
-  json1: { [key: string]: any }, json2: { [key: string]: any }
+  json1: { [key: string]: any },
+  json2: { [key: string]: any }
 ) => {
   for (const key in json2) {
     const val = json2[key];
@@ -68,32 +73,58 @@ export const mergeJson = (
     }
   }
   return json1;
-}
+};
 
 export const isFilePath = (path: string) => {
   return /(\.json|\.js|\.ts)$/.test(path);
-}
+};
 
-export const getOutPath = (it: TargetConfig, duplicateRemovalEntries: string[], idx: number, entryPath: string) => {
+export const getOutPath = (
+  it: TargetConfig,
+  duplicateRemovalEntries: string[],
+  idx: number,
+  entryPath: string
+) => {
   return isFilePath(it.outPath)
     ? typeis(it.rewrite) === DataTypes.function
-      ? path.join(getRootPath(), path.dirname(it.outPath), it.rewrite!(path.basename(entryPath)))
+      ? path.join(
+          getRootPath(),
+          path.dirname(it.outPath),
+          it.rewrite!(path.basename(entryPath))
+        )
       : path.join(getRootPath(), it.outPath)
     : typeis(it.rewrite) === DataTypes.function
-      ? path.join(
+    ? path.join(
         getRootPath(),
         it.outPath,
-        duplicateRemovalEntries[idx].includes('/') ? path.dirname(duplicateRemovalEntries[idx]) : '',
+        duplicateRemovalEntries[idx].includes("/")
+          ? path.dirname(duplicateRemovalEntries[idx])
+          : "",
         it.rewrite!(path.basename(entryPath))
       )
-      : path.join(getRootPath(), it.outPath, duplicateRemovalEntries[idx]);
-}
+    : path.join(getRootPath(), it.outPath, duplicateRemovalEntries[idx]);
+};
+
+export const getBaiduLangCode = (lang: Lang) => {
+  switch (lang) {
+    case Lang["zh-CN"]:
+      return "zh";
+    case Lang["zh-TW"]:
+      return "cht";
+    case Lang.en:
+    default:
+      return lang.toString();
+    case Lang.ko:
+      return "kor";
+    case Lang.ja:
+      return "jp";
+  }
+};
 
 export const consoleSuccess = (...msg: string[]) =>
   console.log(chalk.green(...msg));
 
-export const consoleLog = (...msg: string[]) =>
-  console.log(chalk.blue(...msg));
+export const consoleLog = (...msg: string[]) => console.log(chalk.blue(...msg));
 
 export const consoleWarn = (...msg: string[]) =>
   console.log(chalk.yellow(...msg));
