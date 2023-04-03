@@ -10,8 +10,9 @@ export declare const ls: {
         customOutConfig: string;
         checkConfig: string;
         checkFromPath: string;
+        notHasBaiduKey: string;
     };
-    "zh-CN": {
+    'zh-CN': {
         checkNetwork: string;
         retry: string;
         sourceErr: string;
@@ -22,5 +23,6 @@ export declare const ls: {
         customOutConfig: string;
         checkConfig: string;
         checkFromPath: string;
+        notHasBaiduKey: string;
     };
 };

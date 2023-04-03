@@ -1,8 +1,8 @@
-import { loadConfig } from "unconfig";
+import { loadConfig } from 'unconfig';
 import { Command } from 'commander';
-import { translate } from "./translate.js";
+import { translate } from './translate.js';
 import { consoleError, getOutPath, getRootPath } from './utils.js';
-import { ls } from "./locales.js";
+import { ls } from './locales.js';
 import inquirer from 'inquirer';
 import path from 'path';
 import fg from 'fast-glob';
@@ -15,24 +15,25 @@ program.description('Translate a single js/ts/json file')
     .option('-h, --host <string>', 'proxy host')
     .option('-p, --port <string>', 'proxy port')
     .action(async (options) => {
+    var _a;
     if (Object.keys(options).length > 0) {
-        if (options.input
-            && options.output
-            && options.fromlang
-            && options.targetlang) {
+        if (options.input !== undefined &&
+            options.output !== undefined &&
+            options.fromlang &&
+            options.targetlang) {
             // a file run
-            translate({
+            void translate({
                 input: options.input,
                 output: options.output,
                 fromLang: options.fromlang,
                 targetLang: options.targetlang,
                 toolsLang: 'en',
-                proxy: options.host && options.port
+                proxy: options.host !== undefined && options.port !== undefined
                     ? {
                         host: options.host,
-                        port: Number(options.port),
+                        port: Number(options.port)
                     }
-                    : undefined,
+                    : undefined
             });
         }
         else {
@@ -43,18 +44,18 @@ program.description('Translate a single js/ts/json file')
         const { config } = await loadConfig({
             sources: [
                 {
-                    files: "translate.config",
-                    extensions: ["ts", "js"],
-                },
-            ],
+                    files: 'translate.config',
+                    extensions: ['ts', 'js']
+                }
+            ]
         });
-        config.toolsLang = config.toolsLang || 'zh-CN';
-        config.fromPath = config.fromPath
+        config.toolsLang = (_a = config.toolsLang) !== null && _a !== void 0 ? _a : 'zh-CN';
+        config.fromPath = config.fromPath !== undefined
             ? config.fromPath
             : 'translate.entry.json';
         const entries = fg.sync(config.fromPath, { dot: true, cwd: getRootPath() });
         let duplicateRemovalEntries = [];
-        const tmpEntries = entries.map((v, idx) => v.split('/'));
+        const tmpEntries = entries.map(v => v.split('/'));
         duplicateRemovalEntries = tmpEntries.map((v) => v.filter((childV, childIdx) => {
             if (childIdx === v.length - 1) {
                 return true;
@@ -69,29 +70,29 @@ program.description('Translate a single js/ts/json file')
             return !repeat;
         }).join('/'));
         const checkCustomKey = [{
-                type: "list",
+                type: 'list',
                 message: ls[config.toolsLang].customOutConfig,
-                name: "targetConfig",
+                name: 'targetConfig',
                 choices: config.translate.map(it => ({
                     name: it.label,
-                    value: it.targetConfig,
-                })),
+                    value: it.targetConfig
+                }))
             }];
         if (config.translate.length > 1) {
-            inquirer
+            void inquirer
                 .prompt(checkCustomKey)
                 .then(({ targetConfig }) => {
                 targetConfig.forEach(it => {
                     entries.forEach((entryPath, idx) => {
                         const outPath = getOutPath(it, duplicateRemovalEntries, idx, entryPath);
-                        translate({
+                        void translate({
                             input: path.join(getRootPath(), entryPath),
                             output: outPath,
                             fromLang: config.fromLang,
                             targetLang: it.targetLang,
                             toolsLang: config.toolsLang,
                             proxy: config.proxy,
-                            apiKeyConfig: config.apiKeyConfig,
+                            apiKeyConfig: config.apiKeyConfig
                         });
                     });
                 });
@@ -101,14 +102,14 @@ program.description('Translate a single js/ts/json file')
             config.translate[0].targetConfig.forEach(it => {
                 entries.forEach((entryPath, idx) => {
                     const outPath = getOutPath(it, duplicateRemovalEntries, idx, entryPath);
-                    translate({
+                    void translate({
                         input: path.join(getRootPath(), entryPath),
                         output: outPath,
                         fromLang: config.fromLang,
                         targetLang: it.targetLang,
                         toolsLang: config.toolsLang,
                         proxy: config.proxy,
-                        apiKeyConfig: config.apiKeyConfig,
+                        apiKeyConfig: config.apiKeyConfig
                     });
                 });
             });

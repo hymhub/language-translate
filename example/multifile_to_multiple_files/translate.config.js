@@ -1,11 +1,11 @@
-import { Lang } from 'language-translate/types';
-import { defineConfig } from 'language-translate/utils';
+import { Lang } from 'language-translate/types'
+import { defineConfig } from 'language-translate/utils'
 
 export default defineConfig({
   // toolsLang: 'en', // The translation tool opens this line of comments in English
   proxy: {
     host: '127.0.0.1',
-    port: 7890,
+    port: 7890
   },
   fromLang: Lang.en,
   fromPath: 'locales/en/**/*.json',
@@ -15,17 +15,17 @@ export default defineConfig({
       targetConfig: [
         {
           targetLang: Lang.de,
-          outPath: 'locales/de',
+          outPath: 'locales/de'
         },
         {
           targetLang: Lang['zh-CN'],
-          outPath: 'locales/zh',
+          outPath: 'locales/zh'
         },
         {
           targetLang: Lang.ko,
-          outPath: 'locales/ko',
-        },
+          outPath: 'locales/ko'
+        }
       ]
-    },
+    }
   ]
 })

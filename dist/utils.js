@@ -1,15 +1,15 @@
-import fs from "fs";
-import path from "path";
-import chalk from "chalk";
-import { DataTypes, typeis } from "typeof-plus";
-import { Lang } from "./types.js";
+import fs from 'fs';
+import path from 'path';
+import chalk from 'chalk';
+import { DataTypes, typeis } from 'typeof-plus';
+import { Lang } from './types.js';
 const cwd = process.cwd();
 export const getRootPath = () => cwd;
 export const defineConfig = (config) => {
     return config;
 };
 export const getFile = (filePath) => {
-    return fs.readFileSync(filePath, "utf8");
+    return fs.readFileSync(filePath, 'utf8');
 };
 export const getFiles = (entry, deep) => {
     const result = [];
@@ -31,14 +31,14 @@ export const getFiles = (entry, deep) => {
     return result;
 };
 export const createJsonBuffer = (val, tN) => {
-    tN = tN || 1;
-    let outputBuffer = "{\n";
-    let t = "";
+    tN = tN !== null && tN !== void 0 ? tN : 1;
+    let outputBuffer = '{\n';
+    let t = '';
     for (let index = 0; index < tN; index++) {
-        t += "\t";
+        t += '\t';
     }
     for (const textKey in val) {
-        if (typeof val[textKey] === "string") {
+        if (typeof val[textKey] === 'string') {
             outputBuffer += `${t}${JSON.stringify({ [textKey]: val[textKey] }).slice(1, -1)},\n`;
         }
         else {
@@ -50,10 +50,11 @@ export const createJsonBuffer = (val, tN) => {
     return outputBuffer;
 };
 export const mergeJson = (json1, json2) => {
+    var _a;
     for (const key in json2) {
         const val = json2[key];
         if (typeis(val) === DataTypes.object) {
-            json1[key] = mergeJson(json1[key] || {}, val);
+            json1[key] = mergeJson((_a = json1[key]) !== null && _a !== void 0 ? _a : {}, val);
         }
         else {
             json1[key] = val;
@@ -66,31 +67,31 @@ export const isFilePath = (path) => {
 };
 export const getOutPath = (it, duplicateRemovalEntries, idx, entryPath) => {
     return isFilePath(it.outPath)
-        ? typeis(it.rewrite) === DataTypes.function
+        ? typeof it.rewrite === 'function'
             ? path.join(getRootPath(), path.dirname(it.outPath), it.rewrite(path.basename(entryPath)))
             : path.join(getRootPath(), it.outPath)
-        : typeis(it.rewrite) === DataTypes.function
-            ? path.join(getRootPath(), it.outPath, duplicateRemovalEntries[idx].includes("/")
+        : typeof it.rewrite === 'function'
+            ? path.join(getRootPath(), it.outPath, duplicateRemovalEntries[idx].includes('/')
                 ? path.dirname(duplicateRemovalEntries[idx])
-                : "", it.rewrite(path.basename(entryPath)))
+                : '', it.rewrite(path.basename(entryPath)))
             : path.join(getRootPath(), it.outPath, duplicateRemovalEntries[idx]);
 };
 export const getBaiduLangCode = (lang) => {
     switch (lang) {
-        case Lang["zh-CN"]:
-            return "zh";
-        case Lang["zh-TW"]:
-            return "cht";
+        case Lang['zh-CN']:
+            return 'zh';
+        case Lang['zh-TW']:
+            return 'cht';
+        case Lang.ko:
+            return 'kor';
+        case Lang.ja:
+            return 'jp';
         case Lang.en:
         default:
             return lang.toString();
-        case Lang.ko:
-            return "kor";
-        case Lang.ja:
-            return "jp";
     }
 };
-export const consoleSuccess = (...msg) => console.log(chalk.green(...msg));
-export const consoleLog = (...msg) => console.log(chalk.blue(...msg));
-export const consoleWarn = (...msg) => console.log(chalk.yellow(...msg));
-export const consoleError = (...msg) => console.log(chalk.red(...msg));
+export const consoleSuccess = (...msg) => { console.log(chalk.green(...msg)); };
+export const consoleLog = (...msg) => { console.log(chalk.blue(...msg)); };
+export const consoleWarn = (...msg) => { console.log(chalk.yellow(...msg)); };
+export const consoleError = (...msg) => { console.log(chalk.red(...msg)); };
