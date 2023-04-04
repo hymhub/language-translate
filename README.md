@@ -192,10 +192,12 @@ locales
 | 属性 | 描述 | 类型 | 默认值 | 必填 |
 | :-: | :-- | :-: | :-: | :-: |
 | `toolsLang` | 翻译工具在使用过程中终端输出的提示语言 | `en` \| `zh-CN` | `zh-CN` | 否 |
-| `proxy` | 使用 Google 翻译，需要网络代理，如果您所在的国家能直接使用 Google 就可以不填 proxy 配置项 | [Proxy](#proxy) | undefined | 否 |
+| `proxy` | 使用 Google 翻译，需要网络代理，如果您所在的国家能直接使用 Google 就可以不填 proxy 配置项 | [Proxy](#proxy) | `undefined` | 否 |
 | `fromLang` | 待翻译文件所使用语言 | [Lang](#lang) | - | 是 |
 | `fromPath` | 待翻译文件路径，基于 [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax)，支持动态解析，后缀名可以是 js\|ts\|json | string | `translate.entry.json` | 否 |
 | `translate` | 翻译输出配置，可配置多项在开始翻译时进行选择 | [Translate](#translate)[] | - | 是 |
+| `incrementalMode` | 增量更新模式(翻译完成后修改 fromPath 对应文件内容再次启动翻译的处理策略，详见[IncrementalMode](#incrementalmode)) | [IncrementalMode](#incrementalmode) | `IncrementalMode.cover` | 否 |
+| `apiKeyConfig` | 用于配置非 Google 翻译的密钥信息，目前只扩展了百度翻译接口 | [ApiKeyConfig](#apikeyconfig)  | `undefined` | 否 |
 
 ### `Proxy`
 
@@ -218,6 +220,29 @@ locales
 | `targetLang` | 翻译输出的目标语言 | [Lang](#lang) | 是 |
 | `outPath` |  翻译后文件输出路径，后缀名可以是js\|ts\|json，也可以是目录，输出时如果没有目标文件则自动生成，如果有则增量更新 | string | 是 |
 | `rewrite` | 可选值，传入回调函数可在输出时重写文件名，形参会传入原始文件名，返回值是最终输出文件名 | Callback<br/>`(fileName: string) => string;` | 否 |
+
+### `IncrementalMode`
+| 值 | 描述 |
+| :-: | :--: |
+| `cover` | 覆盖模式: 目标文件中已有的 key 直接覆盖，没有的 key 新增  |
+| `fast` | 快速模式: 目标文件中已有 key 并且值不为空在翻译时会排除, 否则新增 key, 如果不理解可以去项目 [example](https://github.com/hymhub/language-translate/tree/main/example) 目录查看例子 |
+
+### `ApiKeyConfig`
+用于配置非 Google 翻译的密钥信息，百度翻译API免费版限制请求频率，非常鸡肋，非要用百度建议使用付费高级版
+```typescript
+export enum TranslateService {
+  baidu = 'baidu',
+  google = 'google',
+}
+export interface BaiduApiKeyConfig {
+  appId: string
+  appKey: string
+}
+export interface ApiKeyConfig {
+  type: TranslateService
+  [TranslateService.baidu]?: BaiduApiKeyConfig
+}
+```
 
 ### `Lang`
 
