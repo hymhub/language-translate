@@ -196,10 +196,12 @@ You can also output the translation results to another folder, just change the `
 | Attribute | Description | Type | Default | Required |
 | :-: | :-- | :-: | :-: | :-: |
 | `toolsLang` | The prompt language output by the terminal during the use of the translation tool | `en` \| `zh-CN` | `zh-CN` | No |
-| `proxy` | To use Google Translate, a network proxy is required. If your country can directly use Google, you don’t need to fill in the proxy configuration item | [Proxy](#proxy) | undefined | No |
+| `proxy` | To use Google Translate, a network proxy is required. If your country can directly use Google, you don’t need to fill in the proxy configuration item | [Proxy](#proxy) | `undefined` | No |
 | `fromLang` | The language of the document to be translated | [Lang](#lang) | - | Yes |
 | `fromPath` | The path of the file to be translated, based on [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax), supports dynamic parsing, and the suffix name can be js\|ts\|json | string | `translate.entry.json` | No |
 | `translate` | Translation output configuration, multiple options can be configured when starting translation | [Translate](#translate)[] | - | Yes |
+| `incrementalMode` | Incremental update mode (after the translation is completed, modify the file content corresponding to fromPath and restart the translation processing strategy, see [IncrementalMode](#incrementalmode)) | [IncrementalMode](#incrementalmode) | `IncrementalMode.cover` | No |
+| `apiKeyConfig` | Used to configure key information for non-Google translations, currently only expands the Baidu translation interface | [ApiKeyConfig](#apikeyconfig) | `undefined` | No |
 
 ### `Proxy`
 
@@ -222,6 +224,29 @@ You can also output the translation results to another folder, just change the `
 | `targetLang` | Target language for translation output | [Lang](#lang) | Yes |
 | `outPath` | The output path of the translated file. The suffix name can be js\|ts\|json or a directory. If there is no target file during output, it will be automatically generated, and if there is, it will be incrementally updated | string | Yes |
 | `rewrite` | Optional value, the callback function can be passed in to rewrite the file name when outputting, the formal parameter will pass in the original file name, and the return value is the final output file name | Callback<br/>`(fileName: string) => string;` | No |
+
+### `IncrementalMode`
+| Value | Description |
+| :-: | :--: |
+| `cover` | cover mode: The existing keys in the target file are directly overwritten, and the keys that do not exist are added |
+| `fast` | fast mode: If there is an existing key in the target file and the value is not empty, it will be excluded during translation, otherwise add a new key, if you don’t understand it, you can go to the project [example](https://github.com/hymhub/language-translate/tree/main/example) directory to view examples |
+
+### `ApiKeyConfig`
+It is used to configure the key information of non-Google translations. The free version of Baidu Translation API limits the request frequency, which is very tasteless. If you have to use Baidu, it is recommended to use the paid premium version
+```typescript
+export enum TranslateService {
+  baidu = 'baidu',
+  google = 'google',
+}
+export interface BaiduApiKeyConfig {
+  appId: string
+  appKey: string
+}
+export interface ApiKeyConfig {
+  type: TranslateService
+  [TranslateService.baidu]?: BaiduApiKeyConfig
+}
+```
 
 ### `Lang`
 
