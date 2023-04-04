@@ -1,0 +1,9 @@
+{
+	"body":"Körper",
+	"hello":"Hallo{{{name}}}, Wie geht es dir heute?",
+	"cool":"Cool",
+	"number":{
+		"one":"eins",
+		"two":"zwei"
+	}
+}
