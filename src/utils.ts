@@ -105,20 +105,42 @@ export const getOutPath = (
       : path.join(getRootPath(), it.outPath, duplicateRemovalEntries[idx])
 }
 
-export const getBaiduLangCode: (lang: Lang) => string = (lang: Lang) => {
-  switch (lang) {
-    case Lang['zh-CN']:
-      return 'zh'
-    case Lang['zh-TW']:
-      return 'cht'
-    case Lang.ko:
-      return 'kor'
-    case Lang.ja:
-      return 'jp'
-    case Lang.en:
-    default:
-      return lang.toString()
-  }
+/**
+ * @see https://fanyi-api.baidu.com/api/trans/product/apidoc#languageList
+ */
+const baiduLangConfig = new Map([
+  ['auto', 'auto'],
+  ['zh-CN', 'zh'],
+  ['en', 'en'],
+  ['yue', 'yue'],
+  ['wyw', 'wyw'],
+  ['ja', 'jp'],
+  ['ko', 'kor'],
+  ['fr', 'fra'],
+  ['es', 'spa'],
+  ['th', 'th'],
+  ['ar', 'ara'],
+  ['ru', 'ru'],
+  ['pt', 'pt'],
+  ['de', 'de'],
+  ['it', 'it'],
+  ['el', 'el'],
+  ['nl', 'nl'],
+  ['pl', 'pl'],
+  ['bg', 'bul'],
+  ['et', 'est'],
+  ['da', 'dan'],
+  ['fi', 'fin'],
+  ['cs', 'cs'],
+  ['ro', 'rom'],
+  ['sl', 'slo'],
+  ['sv', 'swe'],
+  ['hu', 'hu'],
+  ['zh-TW', 'cht'],
+  ['vi', 'vie']
+])
+export const getBaiduLangCode: (lang: Lang) => Lang = (lang: Lang) => {
+  return (baiduLangConfig.get(lang) ?? lang) as Lang
 }
 
 export const consoleSuccess = (...msg: string[]): void => { console.log(chalk.green(...msg)) }

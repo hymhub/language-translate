@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
 import { DataTypes, typeis } from 'typeof-plus';
-import { Lang } from './types.js';
 const cwd = process.cwd();
 export const getRootPath = () => cwd;
 export const defineConfig = (config) => {
@@ -76,20 +75,43 @@ export const getOutPath = (it, duplicateRemovalEntries, idx, entryPath) => {
                 : '', it.rewrite(path.basename(entryPath)))
             : path.join(getRootPath(), it.outPath, duplicateRemovalEntries[idx]);
 };
+/**
+ * @see https://fanyi-api.baidu.com/api/trans/product/apidoc#languageList
+ */
+const baiduLangConfig = new Map([
+    ['auto', 'auto'],
+    ['zh-CN', 'zh'],
+    ['en', 'en'],
+    ['yue', 'yue'],
+    ['wyw', 'wyw'],
+    ['ja', 'jp'],
+    ['ko', 'kor'],
+    ['fr', 'fra'],
+    ['es', 'spa'],
+    ['th', 'th'],
+    ['ar', 'ara'],
+    ['ru', 'ru'],
+    ['pt', 'pt'],
+    ['de', 'de'],
+    ['it', 'it'],
+    ['el', 'el'],
+    ['nl', 'nl'],
+    ['pl', 'pl'],
+    ['bg', 'bul'],
+    ['et', 'est'],
+    ['da', 'dan'],
+    ['fi', 'fin'],
+    ['cs', 'cs'],
+    ['ro', 'rom'],
+    ['sl', 'slo'],
+    ['sv', 'swe'],
+    ['hu', 'hu'],
+    ['zh-TW', 'cht'],
+    ['vi', 'vie']
+]);
 export const getBaiduLangCode = (lang) => {
-    switch (lang) {
-        case Lang['zh-CN']:
-            return 'zh';
-        case Lang['zh-TW']:
-            return 'cht';
-        case Lang.ko:
-            return 'kor';
-        case Lang.ja:
-            return 'jp';
-        case Lang.en:
-        default:
-            return lang.toString();
-    }
+    var _a;
+    return ((_a = baiduLangConfig.get(lang)) !== null && _a !== void 0 ? _a : lang);
 };
 export const consoleSuccess = (...msg) => { console.log(chalk.green(...msg)); };
 export const consoleLog = (...msg) => { console.log(chalk.blue(...msg)); };

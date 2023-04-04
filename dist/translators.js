@@ -1,6 +1,6 @@
 import tunnel from 'tunnel';
 import google from '@vitalets/google-translate-api';
-import Baidu from 'baidu-fanyi';
+import Baidu from './baidufanyi.js';
 import { TranslateService } from './types.js';
 import { consoleError, consoleWarn, getBaiduLangCode } from './utils.js';
 import { ls } from './locales.js';
@@ -46,15 +46,11 @@ export const getTranslator = ({ fromLang, targetLang, proxy, toolsLang, apiKeyCo
             consoleError(ls[toolsLang].notHasBaiduKey);
             return;
         }
-        const { translate } = new Baidu(apiKeyConfig[TranslateService.baidu].appId, apiKeyConfig[TranslateService.baidu].appKey);
+        const baidu = new Baidu(apiKeyConfig[TranslateService.baidu].appId, apiKeyConfig[TranslateService.baidu].appKey);
         let failedNum = 0;
         const run = () => {
-            translate(key, {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
+            baidu.translate(key, {
                 from: getBaiduLangCode(fromLang),
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
                 to: getBaiduLangCode(targetLang)
             })
                 .then((text) => {
