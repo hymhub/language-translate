@@ -1,4 +1,5 @@
 import { loadConfig } from 'unconfig';
+import { IncrementalMode } from './types.js';
 import { Command } from 'commander';
 import { translate } from './translate.js';
 import { consoleError, getOutPath, getRootPath } from './utils.js';
@@ -15,7 +16,7 @@ program.description('Translate a single js/ts/json file')
     .option('-h, --host <string>', 'proxy host')
     .option('-p, --port <string>', 'proxy port')
     .action(async (options) => {
-    var _a;
+    var _a, _b;
     if (Object.keys(options).length > 0) {
         if (options.input !== undefined &&
             options.output !== undefined &&
@@ -28,6 +29,7 @@ program.description('Translate a single js/ts/json file')
                 fromLang: options.fromlang,
                 targetLang: options.targetlang,
                 toolsLang: 'en',
+                incrementalMode: IncrementalMode.cover,
                 proxy: options.host !== undefined && options.port !== undefined
                     ? {
                         host: options.host,
@@ -50,6 +52,7 @@ program.description('Translate a single js/ts/json file')
             ]
         });
         config.toolsLang = (_a = config.toolsLang) !== null && _a !== void 0 ? _a : 'zh-CN';
+        const incrementalMode = (_b = config.incrementalMode) !== null && _b !== void 0 ? _b : IncrementalMode.cover;
         config.fromPath = config.fromPath !== undefined
             ? config.fromPath
             : 'translate.entry.json';
@@ -92,7 +95,8 @@ program.description('Translate a single js/ts/json file')
                             targetLang: it.targetLang,
                             toolsLang: config.toolsLang,
                             proxy: config.proxy,
-                            apiKeyConfig: config.apiKeyConfig
+                            apiKeyConfig: config.apiKeyConfig,
+                            incrementalMode
                         });
                     });
                 });
@@ -109,7 +113,8 @@ program.description('Translate a single js/ts/json file')
                         targetLang: it.targetLang,
                         toolsLang: config.toolsLang,
                         proxy: config.proxy,
-                        apiKeyConfig: config.apiKeyConfig
+                        apiKeyConfig: config.apiKeyConfig,
+                        incrementalMode
                     });
                 });
             });

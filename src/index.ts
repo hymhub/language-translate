@@ -1,5 +1,6 @@
 import { loadConfig } from 'unconfig'
 import type { ExportConfig, TargetConfig, Lang } from './types'
+import { IncrementalMode } from './types.js'
 import { Command } from 'commander'
 import { translate } from './translate.js'
 import { consoleError, getOutPath, getRootPath } from './utils.js'
@@ -41,6 +42,7 @@ program.description('Translate a single js/ts/json file')
           fromLang: options.fromlang,
           targetLang: options.targetlang,
           toolsLang: 'en',
+          incrementalMode: IncrementalMode.cover,
           proxy: options.host !== undefined && options.port !== undefined
             ? {
                 host: options.host,
@@ -61,6 +63,7 @@ program.description('Translate a single js/ts/json file')
         ]
       })
       config.toolsLang = config.toolsLang ?? 'zh-CN'
+      const incrementalMode = config.incrementalMode ?? IncrementalMode.cover
       config.fromPath = config.fromPath !== undefined
         ? config.fromPath
         : 'translate.entry.json'
@@ -105,7 +108,8 @@ program.description('Translate a single js/ts/json file')
                   targetLang: it.targetLang,
                   toolsLang: config.toolsLang,
                   proxy: config.proxy,
-                  apiKeyConfig: config.apiKeyConfig
+                  apiKeyConfig: config.apiKeyConfig,
+                  incrementalMode
                 })
               })
             })
@@ -121,7 +125,8 @@ program.description('Translate a single js/ts/json file')
               targetLang: it.targetLang,
               toolsLang: config.toolsLang,
               proxy: config.proxy,
-              apiKeyConfig: config.apiKeyConfig
+              apiKeyConfig: config.apiKeyConfig,
+              incrementalMode
             })
           })
         })

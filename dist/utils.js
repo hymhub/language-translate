@@ -61,6 +61,21 @@ export const mergeJson = (json1, json2) => {
     }
     return json1;
 };
+export const filterJson = (json1, json2) => {
+    const json = {};
+    for (const key in json1) {
+        if (typeis(json1[key]) === DataTypes.object) {
+            const res = filterJson(json1[key], typeis(json2[key]) === DataTypes.object ? json2[key] : {});
+            if (Object.keys(res).length > 0) {
+                json[key] = res;
+            }
+        }
+        else if (json2[key] == null) {
+            json[key] = json1[key];
+        }
+    }
+    return json;
+};
 export const isFilePath = (path) => {
     return /(\.json|\.js|\.ts)$/.test(path);
 };

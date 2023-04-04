@@ -1,5 +1,6 @@
 import type { Proxy, Lang, ApiKeyConfig } from './types';
-export declare const translate: ({ input, output, fromLang, targetLang, toolsLang, proxy, apiKeyConfig }: {
+import { IncrementalMode } from './types.js';
+export declare const translate: ({ input, output, fromLang, targetLang, toolsLang, proxy, apiKeyConfig, incrementalMode }: {
     input: string;
     output: string;
     fromLang: Lang;
@@ -7,4 +8,5 @@ export declare const translate: ({ input, output, fromLang, targetLang, toolsLan
     toolsLang?: "zh-CN" | "en" | undefined;
     proxy?: Proxy | undefined;
     apiKeyConfig?: ApiKeyConfig | undefined;
+    incrementalMode: IncrementalMode;
 }) => Promise<undefined>;
