@@ -122,3 +122,8 @@ export var TranslateService;
     TranslateService["baidu"] = "baidu";
     TranslateService["google"] = "google";
 })(TranslateService || (TranslateService = {}));
+export var IncrementalMode;
+(function (IncrementalMode) {
+    IncrementalMode["cover"] = "cover";
+    IncrementalMode["fast"] = "fast";
+})(IncrementalMode || (IncrementalMode = {}));

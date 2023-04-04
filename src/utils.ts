@@ -1,9 +1,8 @@
-import type { ExportConfig, TargetConfig } from './types.js'
+import type { ExportConfig, TargetConfig, Lang } from './types'
 import fs from 'fs'
 import path from 'path'
 import chalk from 'chalk'
 import { DataTypes, typeis } from 'typeof-plus'
-import { Lang } from './types.js'
 
 const cwd = process.cwd()
 export const getRootPath = (): string => cwd
@@ -73,6 +72,24 @@ export const mergeJson = (
     }
   }
   return json1
+}
+
+export const filterJson = (
+  json1: Record<string, any>,
+  json2: Record<string, any>
+): Record<string, any> => {
+  const json: Record<string, any> = {}
+  for (const key in json1) {
+    if (typeis(json1[key]) === DataTypes.object) {
+      const res = filterJson(json1[key], typeis(json2[key]) === DataTypes.object ? json2[key] : {})
+      if (Object.keys(res).length > 0) {
+        json[key] = res
+      }
+    } else if (json2[key] == null) {
+      json[key] = json1[key]
+    }
+  }
+  return json
 }
 
 export const isFilePath = (path: string): boolean => {

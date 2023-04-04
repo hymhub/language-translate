@@ -121,14 +121,25 @@ export interface Translate {
     label: string;
     targetConfig: TargetConfig[];
 }
+export declare enum IncrementalMode {
+    cover = "cover",
+    fast = "fast"
+}
 export interface ExportConfig {
     /**
-     * @default en
+     * @default 'zh-CN'
      */
     toolsLang?: 'en' | 'zh-CN';
     proxy?: Proxy;
-    apiKeyConfig?: ApiKeyConfig;
     fromLang: Lang;
+    /**
+     * @default 'translate.entry.json'
+     */
     fromPath?: string;
+    apiKeyConfig?: ApiKeyConfig;
+    /**
+     * @default IncrementalMode.cover
+     */
+    incrementalMode?: IncrementalMode;
     translate: Translate[];
 }

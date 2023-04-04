@@ -4,10 +4,12 @@ import {
   consoleLog,
   consoleSuccess,
   createJsonBuffer,
+  filterJson,
   isFilePath,
   mergeJson
 } from './utils.js'
 import type { Proxy, Lang, ApiKeyConfig } from './types'
+import { IncrementalMode } from './types.js'
 import { getTranslator } from './translators.js'
 import fs from 'fs'
 import path from 'path'
@@ -18,7 +20,8 @@ export const translate = async ({
   targetLang,
   toolsLang = 'zh-CN',
   proxy,
-  apiKeyConfig
+  apiKeyConfig,
+  incrementalMode
 }: {
   input: string
   output: string
@@ -27,6 +30,7 @@ export const translate = async ({
   toolsLang?: 'en' | 'zh-CN'
   proxy?: Proxy
   apiKeyConfig?: ApiKeyConfig
+  incrementalMode: IncrementalMode
 }): Promise<undefined> => {
   if (!isFilePath(input)) {
     return
@@ -114,45 +118,66 @@ export const translate = async ({
     }
     return resJsonObj
   }
-  const resJson = await translateRun(sourceJson)
   // ------read out json start-----
   let startStr = ''
-  const funValues: string[] = []
+  let funValues: string[] = []
   let outFile
-  // eslint-disable-next-line prefer-const
   let outTextJson: Record<string, any> = {}
-  try {
-    outFile = fs.readFileSync(output, 'utf8')
+  const readOutFile = (): boolean => {
     try {
-      if (outFile.includes('export')) {
-        startStr = outFile.slice(0, outFile.indexOf('export'))
-        outFile = outFile.slice(outFile.indexOf('export'))
-      }
-      startStr += outFile.slice(0, outFile.indexOf('{'))
-      outFile = outFile.slice(
-        outFile.indexOf('{'),
-        outFile.lastIndexOf('}') + 1
-      )
-      outFile = outFile.replace(
-        /['"`a-zA-Z0-9_]+:.*(\(.+\).*=>|function[\s\S]+?return)[\s\S]+?,\n/g,
-        (v: string) => {
-          funValues.push(v)
-          return ''
+      outFile = fs.readFileSync(output, 'utf8')
+      try {
+        if (outFile.includes('export')) {
+          startStr = outFile.slice(0, outFile.indexOf('export'))
+          outFile = outFile.slice(outFile.indexOf('export'))
         }
-      )
-      outFile = 'outTextJson = ' + outFile
-      // eslint-disable-next-line no-eval
-      eval(`(${outFile})`)
+        startStr += outFile.slice(0, outFile.indexOf('{'))
+        outFile = outFile.slice(
+          outFile.indexOf('{'),
+          outFile.lastIndexOf('}') + 1
+        )
+        outFile = outFile.replace(
+          /['"`a-zA-Z0-9_]+:.*(\(.+\).*=>|function[\s\S]+?return)[\s\S]+?,\n/g,
+          (v: string) => {
+            funValues.push(v)
+            return ''
+          }
+        )
+        outFile = 'outTextJson = ' + outFile
+        // eslint-disable-next-line no-eval
+        eval(`(${outFile})`)
+      } catch (error) {
+        consoleError(
+          `${ls[toolsLang].targetErr}\n path ---> ${output}\n${String(error)}`
+        )
+        return true
+      }
     } catch (error) {
-      consoleError(
-        `${ls[toolsLang].targetErr}\n path ---> ${output}\n${String(error)}`
-      )
+      // readFileSync error
+    }
+    return false
+  }
+  if (incrementalMode === IncrementalMode.fast) {
+    if (readOutFile()) {
       return
     }
-  } catch (error) {
-    // readFileSync error
+  }
+  const transJson = incrementalMode === IncrementalMode.fast
+    ? filterJson(sourceJson, outTextJson)
+    : sourceJson
+  if (incrementalMode === IncrementalMode.fast && Object.keys(transJson).length === 0) {
+    // no new key
+    return
   }
   // ------read out json end-----
+  const resJson = await translateRun(transJson)
+  startStr = ''
+  funValues = []
+  outFile = null
+  outTextJson = {}
+  if (readOutFile()) {
+    return
+  }
   let outPutBuffer = ((outFile != null) ? startStr : inputStartStr) + '{\n'
   funValues.forEach((item) => {
     outPutBuffer += `\t${item}`
