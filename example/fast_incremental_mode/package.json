@@ -1,0 +1,15 @@
+{
+  "name": "fast_incremental_mode",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "translate": "translate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "language-translate": "^2.1.3"
+  }
+}
