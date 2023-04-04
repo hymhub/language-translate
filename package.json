@@ -54,7 +54,7 @@
   "homepage": "https://github.com/hymhub/language-translate#readme",
   "dependencies": {
     "@vitalets/google-translate-api": "^8.0.0",
-    "baidu-fanyi": "^0.0.3",
+    "axios": "^1.3.4",
     "chalk": "^5.2.0",
     "commander": "^10.0.0",
     "fast-glob": "^3.2.12",
