@@ -2,6 +2,7 @@
   "body": "body",
   "hello": "hello {{{name}}}, How are you today?",
   "cool": "cool",
+  "export": "export",
   "number": {
     "one": "one",
     "two": "two"

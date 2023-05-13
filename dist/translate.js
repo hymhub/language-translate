@@ -20,7 +20,7 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
     let sourceText;
     try {
         sourceText = fs.readFileSync(input, 'utf8');
-        if (sourceText.includes('export')) {
+        if (sourceText.includes('export') && !input.endsWith('.json')) {
             inputStartStr = sourceText.slice(0, sourceText.indexOf('export'));
             sourceText = sourceText.slice(sourceText.indexOf('export'));
         }
