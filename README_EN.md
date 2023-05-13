@@ -423,14 +423,3 @@ Options:
   -p, --port <string>      proxy port
   --help                   display help for command
 ```
-
-## Question
-
-If you have any questions, you can contact me by
-
-- Email : hyminghan@qq.com
-
-
-## Author
-
-- [@hymenhan](https://github.com/hymhub)

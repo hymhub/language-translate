@@ -418,14 +418,3 @@ Options:
   -p, --port <string>      proxy port
   --help                   display help for command
 ```
-
-## 问题
-
-如果您有任何问题，您可以通过以下方式与我联系
-
-- Email : hyminghan@qq.com
-
-
-## 作者
-
-- [@hymenhan](https://github.com/hymhub)
