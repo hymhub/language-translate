@@ -9,6 +9,7 @@ export declare const filterJson: (json1: Record<string, any>, json2: Record<stri
 export declare const isFilePath: (path: string) => boolean;
 export declare const getOutPath: (it: TargetConfig, duplicateRemovalEntries: string[], idx: number, entryPath: string) => string;
 export declare const getBaiduLangCode: (lang: Lang) => Lang;
+export declare const splitJson: (json: Record<string, any>) => Array<Record<string, any>>;
 export declare const consoleSuccess: (...msg: string[]) => void;
 export declare const consoleLog: (...msg: string[]) => void;
 export declare const consoleWarn: (...msg: string[]) => void;

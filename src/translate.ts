@@ -6,7 +6,8 @@ import {
   createJsonBuffer,
   filterJson,
   isFilePath,
-  mergeJson
+  mergeJson,
+  splitJson
 } from './utils.js'
 import type { Proxy, Lang, ApiKeyConfig } from './types'
 import { IncrementalMode } from './types.js'
@@ -21,7 +22,9 @@ export const translate = async ({
   toolsLang = 'zh-CN',
   proxy,
   apiKeyConfig,
-  incrementalMode
+  incrementalMode,
+  translateRuntimeDelay = 0,
+  translateRuntimeChunkSize = 5
 }: {
   input: string
   output: string
@@ -31,6 +34,8 @@ export const translate = async ({
   proxy?: Proxy
   apiKeyConfig?: ApiKeyConfig
   incrementalMode: IncrementalMode
+  translateRuntimeDelay?: number
+  translateRuntimeChunkSize?: number
 }): Promise<undefined> => {
   if (!isFilePath(input)) {
     return
@@ -110,6 +115,10 @@ export const translate = async ({
         } else {
           resText = await translator(text)
         }
+        if (translateRuntimeDelay > 0) {
+          consoleLog(`delay ${translateRuntimeDelay}ms`)
+          await new Promise((resolve) => setTimeout(resolve, translateRuntimeDelay))
+        }
         consoleSuccess(`${fromLang}: ${text} ---> ${targetLang}: ${resText}`)
         resJsonObj[key] = resText
       } else {
@@ -127,7 +136,7 @@ export const translate = async ({
     try {
       outFile = fs.readFileSync(output, 'utf8')
       try {
-        if (outFile.includes('export')) {
+        if (outFile.includes('export') && !output.endsWith('.json')) {
           startStr = outFile.slice(0, outFile.indexOf('export'))
           outFile = outFile.slice(outFile.indexOf('export'))
         }
@@ -170,27 +179,54 @@ export const translate = async ({
     return
   }
   // ------read out json end-----
-  const resJson = await translateRun(transJson)
-  startStr = ''
-  funValues = []
-  outFile = null
-  outTextJson = {}
-  if (readOutFile()) {
-    return
+  let outTipMsg: string = ''
+  const outJsonToFile = (resJson: Record<string, any>): void => {
+    startStr = ''
+    funValues = []
+    outFile = null
+    outTextJson = {}
+    if (readOutFile()) {
+      return
+    }
+    let outPutBuffer = ((outFile != null) ? startStr : inputStartStr) + '{\n'
+    funValues.forEach((item) => {
+      outPutBuffer += `\t${item}`
+    })
+    if (outFile != null) {
+      outPutBuffer += createJsonBuffer(mergeJson(outTextJson, resJson)).slice(2)
+      fs.writeFileSync(output, outPutBuffer)
+      if (outTipMsg.length === 0) {
+        outTipMsg = `${ls[toolsLang].patchSuccess} --> ${output}`
+      }
+    } else {
+      outPutBuffer += createJsonBuffer(resJson).slice(2)
+      const outDirname = path.dirname(output)
+      fs.existsSync(outDirname) || fs.mkdirSync(outDirname, { recursive: true })
+      fs.writeFileSync(output, outPutBuffer)
+      if (outTipMsg.length === 0) {
+        outTipMsg = `${ls[toolsLang].createSuccess} --> ${output}`
+      }
+    }
   }
-  let outPutBuffer = ((outFile != null) ? startStr : inputStartStr) + '{\n'
-  funValues.forEach((item) => {
-    outPutBuffer += `\t${item}`
+  const fragments = splitJson(transJson)
+  let chunkJson: Record<string, any> | null = null
+  const chunks: Array<Record<string, any>> = []
+  fragments.forEach((it, idx) => {
+    if (idx % translateRuntimeChunkSize === 0) {
+      chunkJson !== null && chunks.push(chunkJson)
+      chunkJson = it
+    } else if (chunkJson !== null) {
+      chunkJson = mergeJson(chunkJson, it)
+    }
   })
-  if (outFile != null) {
-    outPutBuffer += createJsonBuffer(mergeJson(outTextJson, resJson)).slice(2)
-    fs.writeFileSync(output, outPutBuffer)
-    consoleLog(`${ls[toolsLang].patchSuccess} --> ${output}`)
-  } else {
-    outPutBuffer += createJsonBuffer(resJson).slice(2)
-    const outDirname = path.dirname(output)
-    fs.existsSync(outDirname) || fs.mkdirSync(outDirname, { recursive: true })
-    fs.writeFileSync(output, outPutBuffer)
-    consoleLog(`${ls[toolsLang].createSuccess} --> ${output}`)
+  if (chunkJson !== null && Object.keys(chunkJson).length > 0) {
+    chunks.push(chunkJson)
+    chunkJson = null
   }
+  for (let i = 0; i < chunks.length; i++) {
+    const chunk = chunks[i]
+    const resJson = await translateRun(chunk)
+    outJsonToFile(resJson)
+  }
+  consoleLog(outTipMsg)
 }

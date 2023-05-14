@@ -109,7 +109,9 @@ program.description('Translate a single js/ts/json file')
                   toolsLang: config.toolsLang,
                   proxy: config.proxy,
                   apiKeyConfig: config.apiKeyConfig,
-                  incrementalMode
+                  incrementalMode,
+                  translateRuntimeDelay: config.translateRuntimeDelay,
+                  translateRuntimeChunkSize: config.translateRuntimeChunkSize
                 })
               })
             })
@@ -126,7 +128,9 @@ program.description('Translate a single js/ts/json file')
               toolsLang: config.toolsLang,
               proxy: config.proxy,
               apiKeyConfig: config.apiKeyConfig,
-              incrementalMode
+              incrementalMode,
+              translateRuntimeDelay: config.translateRuntimeDelay,
+              translateRuntimeChunkSize: config.translateRuntimeChunkSize
             })
           })
         })

@@ -169,5 +169,13 @@ export interface ExportConfig {
    * @default IncrementalMode.cover
    */
   incrementalMode?: IncrementalMode
+  /**
+   * @default 0
+   */
+  translateRuntimeDelay?: number
+  /**
+   * @default 5
+   */
+  translateRuntimeChunkSize?: number
   translate: Translate[]
 }

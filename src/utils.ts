@@ -160,6 +160,22 @@ export const getBaiduLangCode: (lang: Lang) => Lang = (lang: Lang) => {
   return (baiduLangConfig.get(lang) ?? lang) as Lang
 }
 
+export const splitJson = (json: Record<string, any>): Array<Record<string, any>> => {
+  const result = []
+  for (const key in json) {
+    const value = json[key]
+    if (typeis(value) === DataTypes.object) {
+      const subResult = splitJson(value)
+      for (const subObj of subResult) {
+        result.push({ [key]: subObj })
+      }
+    } else {
+      result.push({ [key]: value })
+    }
+  }
+  return result
+}
+
 export const consoleSuccess = (...msg: string[]): void => { console.log(chalk.green(...msg)) }
 
 export const consoleLog = (...msg: string[]): void => { console.log(chalk.blue(...msg)) }

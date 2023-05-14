@@ -128,6 +128,22 @@ export const getBaiduLangCode = (lang) => {
     var _a;
     return ((_a = baiduLangConfig.get(lang)) !== null && _a !== void 0 ? _a : lang);
 };
+export const splitJson = (json) => {
+    const result = [];
+    for (const key in json) {
+        const value = json[key];
+        if (typeis(value) === DataTypes.object) {
+            const subResult = splitJson(value);
+            for (const subObj of subResult) {
+                result.push({ [key]: subObj });
+            }
+        }
+        else {
+            result.push({ [key]: value });
+        }
+    }
+    return result;
+};
 export const consoleSuccess = (...msg) => { console.log(chalk.green(...msg)); };
 export const consoleLog = (...msg) => { console.log(chalk.blue(...msg)); };
 export const consoleWarn = (...msg) => { console.log(chalk.yellow(...msg)); };
