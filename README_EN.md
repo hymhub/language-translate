@@ -203,7 +203,7 @@ You can also output the translation results to another folder, just change the `
 | `incrementalMode` | Incremental update mode (after the translation is completed, modify the file content corresponding to fromPath and restart the translation processing strategy, see [IncrementalMode](#incrementalmode)) | [IncrementalMode](#incrementalmode) | `IncrementalMode.cover` | No |
 | `translateRuntimeDelay` | The delay between each key during translation, in milliseconds | number | 0 | 否 |
 | `translateRuntimeChunkSize` | During the translation process, write the translation results to the hard disk synchronously every few keys to prevent accidental interruption and waste the translated keys | number | 5 | 否 |
-| `ignoreValuesAndCopyToTarget` | Exclude the text specified in the `fromLang` file and directly copy it into the target file | string[] | [] | No |
+| `ignoreValuesAndCopyToTarget` | Exclude the text specified in the `fromPath` file and directly copy it into the target file | string[] | [] | No |
 | `apiKeyConfig` | Used to configure key information for non-Google translations, currently only expands the Baidu translation interface | [ApiKeyConfig](#apikeyconfig) | `undefined` | No |
 
 ### `Proxy`
