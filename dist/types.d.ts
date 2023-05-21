@@ -149,5 +149,6 @@ export interface ExportConfig {
      * @default 5
      */
     translateRuntimeChunkSize?: number;
+    ignoreValuesAndCopyToTarget?: string[];
     translate: Translate[];
 }

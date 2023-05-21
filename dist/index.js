@@ -98,7 +98,8 @@ program.description('Translate a single js/ts/json file')
                             apiKeyConfig: config.apiKeyConfig,
                             incrementalMode,
                             translateRuntimeDelay: config.translateRuntimeDelay,
-                            translateRuntimeChunkSize: config.translateRuntimeChunkSize
+                            translateRuntimeChunkSize: config.translateRuntimeChunkSize,
+                            ignoreValuesAndCopyToTarget: config.ignoreValuesAndCopyToTarget
                         });
                     });
                 });
@@ -118,7 +119,8 @@ program.description('Translate a single js/ts/json file')
                         apiKeyConfig: config.apiKeyConfig,
                         incrementalMode,
                         translateRuntimeDelay: config.translateRuntimeDelay,
-                        translateRuntimeChunkSize: config.translateRuntimeChunkSize
+                        translateRuntimeChunkSize: config.translateRuntimeChunkSize,
+                        ignoreValuesAndCopyToTarget: config.ignoreValuesAndCopyToTarget
                     });
                 });
             });

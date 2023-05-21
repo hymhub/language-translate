@@ -24,7 +24,8 @@ export const translate = async ({
   apiKeyConfig,
   incrementalMode,
   translateRuntimeDelay = 0,
-  translateRuntimeChunkSize = 5
+  translateRuntimeChunkSize = 5,
+  ignoreValuesAndCopyToTarget = []
 }: {
   input: string
   output: string
@@ -36,6 +37,7 @@ export const translate = async ({
   incrementalMode: IncrementalMode
   translateRuntimeDelay?: number
   translateRuntimeChunkSize?: number
+  ignoreValuesAndCopyToTarget?: string[]
 }): Promise<undefined> => {
   if (!isFilePath(input)) {
     return
@@ -91,7 +93,10 @@ export const translate = async ({
       const text = jsonObj[key]
       if (typeof text === 'string') {
         let resText = ''
-        if (/\{\{.+?\}\}/.test(text)) {
+        const ignore = ignoreValuesAndCopyToTarget.includes(text)
+        if (ignore) {
+          resText = text
+        } else if (/\{\{.+?\}\}/.test(text)) {
           const texts = text.split(/\{\{.+?\}\}/g)
           const slots: string[] = []
           text.replace(/\{\{.+?\}\}/g, (v) => {
@@ -115,11 +120,11 @@ export const translate = async ({
         } else {
           resText = await translator(text)
         }
-        if (translateRuntimeDelay > 0) {
+        if (translateRuntimeDelay > 0 && !ignore) {
           consoleLog(`delay ${translateRuntimeDelay}ms`)
           await new Promise((resolve) => setTimeout(resolve, translateRuntimeDelay))
         }
-        consoleSuccess(`${fromLang}: ${text} ---> ${targetLang}: ${resText}`)
+        consoleSuccess(`${fromLang}: ${text} --${ignore ? '(with ignore copy)-' : ''}-> ${targetLang}: ${resText}`)
         resJsonObj[key] = resText
       } else {
         resJsonObj[key] = await translateRun(text)

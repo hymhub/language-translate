@@ -4,7 +4,7 @@ import { IncrementalMode } from './types.js';
 import { getTranslator } from './translators.js';
 import fs from 'fs';
 import path from 'path';
-export const translate = async ({ input, output, fromLang, targetLang, toolsLang = 'zh-CN', proxy, apiKeyConfig, incrementalMode, translateRuntimeDelay = 0, translateRuntimeChunkSize = 5 }) => {
+export const translate = async ({ input, output, fromLang, targetLang, toolsLang = 'zh-CN', proxy, apiKeyConfig, incrementalMode, translateRuntimeDelay = 0, translateRuntimeChunkSize = 5, ignoreValuesAndCopyToTarget = [] }) => {
     if (!isFilePath(input)) {
         return;
     }
@@ -53,7 +53,11 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
             const text = jsonObj[key];
             if (typeof text === 'string') {
                 let resText = '';
-                if (/\{\{.+?\}\}/.test(text)) {
+                const ignore = ignoreValuesAndCopyToTarget.includes(text);
+                if (ignore) {
+                    resText = text;
+                }
+                else if (/\{\{.+?\}\}/.test(text)) {
                     const texts = text.split(/\{\{.+?\}\}/g);
                     const slots = [];
                     text.replace(/\{\{.+?\}\}/g, (v) => {
@@ -78,11 +82,11 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
                 else {
                     resText = await translator(text);
                 }
-                if (translateRuntimeDelay > 0) {
+                if (translateRuntimeDelay > 0 && !ignore) {
                     consoleLog(`delay ${translateRuntimeDelay}ms`);
                     await new Promise((resolve) => setTimeout(resolve, translateRuntimeDelay));
                 }
-                consoleSuccess(`${fromLang}: ${text} ---> ${targetLang}: ${resText}`);
+                consoleSuccess(`${fromLang}: ${text} --${ignore ? '(with ignore copy)-' : ''}-> ${targetLang}: ${resText}`);
                 resJsonObj[key] = resText;
             }
             else {
