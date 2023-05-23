@@ -144,6 +144,42 @@ export const splitJson = (json) => {
     }
     return result;
 };
+export const flattenObject = (obj, prefix = '') => {
+    let result = {};
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            const nestedKey = prefix.length > 0 ? `${prefix}/${key}` : key;
+            if (typeis(obj[key]) === DataTypes.object) {
+                const nestedObj = flattenObject(obj[key], nestedKey);
+                result = Object.assign(Object.assign({}, result), nestedObj);
+            }
+            else {
+                result[nestedKey] = obj[key];
+            }
+        }
+    }
+    return result;
+};
+export const unflattenObject = (obj) => {
+    const result = {};
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            const nestedKeys = key.split('/');
+            let nestedObj = result;
+            for (let i = 0; i < nestedKeys.length; i++) {
+                const nestedKey = nestedKeys[i];
+                if (!Object.prototype.hasOwnProperty.call(nestedObj, nestedKey)) {
+                    nestedObj[nestedKey] = {};
+                }
+                if (i === nestedKeys.length - 1) {
+                    nestedObj[nestedKey] = obj[key];
+                }
+                nestedObj = nestedObj[nestedKey];
+            }
+        }
+    }
+    return result;
+};
 export const consoleSuccess = (...msg) => { console.log(chalk.green(...msg)); };
 export const consoleLog = (...msg) => { console.log(chalk.blue(...msg)); };
 export const consoleWarn = (...msg) => { console.log(chalk.yellow(...msg)); };

@@ -11,6 +11,7 @@ export declare const ls: {
         checkConfig: string;
         checkFromPath: string;
         notHasBaiduKey: string;
+        translateRuntimeMergeEnabledErr: string;
     };
     'zh-CN': {
         checkNetwork: string;
@@ -24,5 +25,6 @@ export declare const ls: {
         checkConfig: string;
         checkFromPath: string;
         notHasBaiduKey: string;
+        translateRuntimeMergeEnabledErr: string;
     };
 };

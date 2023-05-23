@@ -201,9 +201,10 @@ You can also output the translation results to another folder, just change the `
 | `fromPath` | The path of the file to be translated, based on [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax), supports dynamic parsing, and the suffix name can be js\|ts\|json | string | `translate.entry.json` | No |
 | `translate` | Translation output configuration, multiple options can be configured when starting translation | [Translate](#translate)[] | - | Yes |
 | `incrementalMode` | Incremental update mode (after the translation is completed, modify the file content corresponding to fromPath and restart the translation processing strategy, see [IncrementalMode](#incrementalmode)) | [IncrementalMode](#incrementalmode) | `IncrementalMode.cover` | No |
-| `translateRuntimeDelay` | The delay between each key during translation, in milliseconds | number | 0 | 否 |
-| `translateRuntimeChunkSize` | During the translation process, write the translation results to the hard disk synchronously every few keys to prevent accidental interruption and waste the translated keys | number | 5 | 否 |
-| `ignoreValuesAndCopyToTarget` | Exclude the text specified in the `fromPath` file and directly copy it into the target file | string[] | [] | No |
+| `translateRuntimeDelay` | The delay between each key during translation, in milliseconds | number | `0` | No |
+| `translateRuntimeChunkSize` | During the translation process, write the translation results to the hard disk synchronously every few keys to prevent accidental interruption and waste the translated keys | number | `5` | No |
+| `translateRuntimeMergeEnabled` | Enable the text merge function when the translation is running, reducing the frequency of API calls and significantly improving the translation speed (experimental feature). | boolean | `false` | No |
+| `ignoreValuesAndCopyToTarget` | Exclude the text specified in the `fromPath` file and directly copy it into the target file | string[] | `[]` | No |
 | `apiKeyConfig` | Used to configure key information for non-Google translations, currently only expands the Baidu translation interface | [ApiKeyConfig](#apikeyconfig) | `undefined` | No |
 
 ### `Proxy`

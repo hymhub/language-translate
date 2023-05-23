@@ -112,7 +112,8 @@ program.description('Translate a single js/ts/json file')
                   incrementalMode,
                   translateRuntimeDelay: config.translateRuntimeDelay,
                   translateRuntimeChunkSize: config.translateRuntimeChunkSize,
-                  ignoreValuesAndCopyToTarget: config.ignoreValuesAndCopyToTarget
+                  ignoreValuesAndCopyToTarget: config.ignoreValuesAndCopyToTarget,
+                  translateRuntimeMergeEnabled: config.translateRuntimeMergeEnabled
                 })
               })
             })
@@ -132,7 +133,8 @@ program.description('Translate a single js/ts/json file')
               incrementalMode,
               translateRuntimeDelay: config.translateRuntimeDelay,
               translateRuntimeChunkSize: config.translateRuntimeChunkSize,
-              ignoreValuesAndCopyToTarget: config.ignoreValuesAndCopyToTarget
+              ignoreValuesAndCopyToTarget: config.ignoreValuesAndCopyToTarget,
+              translateRuntimeMergeEnabled: config.translateRuntimeMergeEnabled
             })
           })
         })

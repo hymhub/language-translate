@@ -1,6 +1,6 @@
 import type { Proxy, Lang, ApiKeyConfig } from './types';
 import { IncrementalMode } from './types.js';
-export declare const translate: ({ input, output, fromLang, targetLang, toolsLang, proxy, apiKeyConfig, incrementalMode, translateRuntimeDelay, translateRuntimeChunkSize, ignoreValuesAndCopyToTarget }: {
+export declare const translate: ({ input, output, fromLang, targetLang, toolsLang, proxy, apiKeyConfig, incrementalMode, translateRuntimeDelay, translateRuntimeChunkSize, translateRuntimeMergeEnabled, ignoreValuesAndCopyToTarget }: {
     input: string;
     output: string;
     fromLang: Lang;
@@ -11,5 +11,6 @@ export declare const translate: ({ input, output, fromLang, targetLang, toolsLan
     incrementalMode: IncrementalMode;
     translateRuntimeDelay?: number | undefined;
     translateRuntimeChunkSize?: number | undefined;
+    translateRuntimeMergeEnabled?: boolean | undefined;
     ignoreValuesAndCopyToTarget?: string[] | undefined;
 }) => Promise<undefined>;

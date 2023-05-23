@@ -9,7 +9,8 @@ const en = {
   customOutConfig: 'Please select a custom output configuration',
   checkConfig: 'Please check whether the translate.config configuration is correct',
   checkFromPath: 'The file to be translated was not found, please check whether the fromPath configuration is correct',
-  notHasBaiduKey: 'Baidu key configuration not found in apiKeyConfig'
+  notHasBaiduKey: 'Baidu key configuration not found in apiKeyConfig',
+  translateRuntimeMergeEnabledErr: 'Exception in translate runtime merge enabled'
 }
 
 const zh = {
@@ -23,7 +24,8 @@ const zh = {
   customOutConfig: '请选择自定义输出配置',
   checkConfig: '请检查 translate.config 配置是否正确',
   checkFromPath: '未找到待翻译文件，请检查 fromPath 配置是否正确',
-  notHasBaiduKey: '在 apiKeyConfig 中没有找到 baidu key 配置'
+  notHasBaiduKey: '在 apiKeyConfig 中没有找到 baidu key 配置',
+  translateRuntimeMergeEnabledErr: '文案合并翻译功能出现异常'
 }
 
 export const ls = { en, 'zh-CN': zh }

@@ -5,9 +5,11 @@ import {
   consoleSuccess,
   createJsonBuffer,
   filterJson,
+  flattenObject,
   isFilePath,
   mergeJson,
-  splitJson
+  splitJson,
+  unflattenObject
 } from './utils.js'
 import type { Proxy, Lang, ApiKeyConfig } from './types'
 import { IncrementalMode } from './types.js'
@@ -25,6 +27,7 @@ export const translate = async ({
   incrementalMode,
   translateRuntimeDelay = 0,
   translateRuntimeChunkSize = 5,
+  translateRuntimeMergeEnabled = false,
   ignoreValuesAndCopyToTarget = []
 }: {
   input: string
@@ -37,6 +40,7 @@ export const translate = async ({
   incrementalMode: IncrementalMode
   translateRuntimeDelay?: number
   translateRuntimeChunkSize?: number
+  translateRuntimeMergeEnabled?: boolean
   ignoreValuesAndCopyToTarget?: string[]
 }): Promise<undefined> => {
   if (!isFilePath(input)) {
@@ -214,24 +218,74 @@ export const translate = async ({
     }
   }
   const fragments = splitJson(transJson)
-  let chunkJson: Record<string, any> | null = null
-  const chunks: Array<Record<string, any>> = []
-  fragments.forEach((it, idx) => {
-    if (idx % translateRuntimeChunkSize === 0) {
-      chunkJson !== null && chunks.push(chunkJson)
-      chunkJson = it
-    } else if (chunkJson !== null) {
-      chunkJson = mergeJson(chunkJson, it)
+  if (translateRuntimeMergeEnabled) {
+    let chunkValuesLength = 0
+    let keys: string[] = []
+    let values: string[] = []
+    const chunks: Array<[string[], string[]]> = []
+    fragments.forEach((it, idx) => {
+      const flattenIt = flattenObject(it)
+      const flattenItVlasLen = Object.values(flattenIt).reduce((pre, cur) => pre + cur.length, 0)
+      if (flattenItVlasLen + chunkValuesLength >= 5000) {
+        chunks.push([keys, values])
+        chunkValuesLength = 0
+        keys = []
+        values = []
+      }
+      chunkValuesLength += (flattenItVlasLen + 5) // 5-占位符
+      Object.entries(flattenIt).forEach(([key, val]) => {
+        keys.push(key)
+        values.push(val)
+      })
+    })
+    if (keys.length > 0) {
+      chunks.push([keys, values])
+      chunkValuesLength = 0
+      keys = []
+      values = []
     }
-  })
-  if (chunkJson !== null && Object.keys(chunkJson).length > 0) {
-    chunks.push(chunkJson)
-    chunkJson = null
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i]
+      const prepareInputJson = { text: chunk[1].join('\n###\n') }
+      const prepareOutJson: Record<string, string> = {}
+      const resJson = await translateRun(prepareInputJson)
+      const outValues: string[] = resJson.text.split(/\n *### *\n/).map((v: string) => v.trim())
+      if (chunk[1].length !== outValues.length) {
+        consoleError(
+          `${ls[toolsLang].translateRuntimeMergeEnabledErr}`
+        )
+        consoleError(
+          `input values ---> ${chunk[1].toString()}\n output values ---> ${outValues.toString()}}`
+        )
+        return
+      }
+      chunk[0].forEach((key, idx) => {
+        prepareOutJson[key] = outValues[idx]
+      })
+      const outJson = unflattenObject(prepareOutJson)
+      outJsonToFile(outJson)
+    }
+  } else {
+    let chunkJson: Record<string, any> | null = null
+    const chunks: Array<Record<string, any>> = []
+    fragments.forEach((it, idx) => {
+      if (idx % translateRuntimeChunkSize === 0) {
+        chunkJson !== null && chunks.push(chunkJson)
+        chunkJson = it
+      } else if (chunkJson !== null) {
+        chunkJson = mergeJson(chunkJson, it)
+      }
+    })
+    if (chunkJson !== null && Object.keys(chunkJson).length > 0) {
+      chunks.push(chunkJson)
+      chunkJson = null
+    }
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i]
+      const resJson = await translateRun(chunk)
+      outJsonToFile(resJson)
+    }
   }
-  for (let i = 0; i < chunks.length; i++) {
-    const chunk = chunks[i]
-    const resJson = await translateRun(chunk)
-    outJsonToFile(resJson)
-  }
+
   consoleLog(outTipMsg)
 }

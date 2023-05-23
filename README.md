@@ -197,9 +197,10 @@ locales
 | `fromPath` | 待翻译文件路径，基于 [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax)，支持动态解析，后缀名可以是 js\|ts\|json | string | `translate.entry.json` | 否 |
 | `translate` | 翻译输出配置，可配置多项在开始翻译时进行选择 | [Translate](#translate)[] | - | 是 |
 | `incrementalMode` | 增量更新模式(翻译完成后修改 fromPath 对应文件内容再次启动翻译的处理策略，详见[IncrementalMode](#incrementalmode)) | [IncrementalMode](#incrementalmode) | `IncrementalMode.cover` | 否 |
-| `translateRuntimeDelay` | 翻译过程中每个 key 之间的延迟，单位毫秒 | number | 0 | 否 |
-| `translateRuntimeChunkSize` | 翻译过程中每隔多少个 key 将翻译结果同步写入一下硬盘，防止意外中断导致浪费已翻译的 key | number | 5 | 否 |
-| `ignoreValuesAndCopyToTarget` | 排除`fromPath`文件中指定的文案并直接拷贝到目标文件内 | string[] | [] | 否 |
+| `translateRuntimeDelay` | 翻译过程中每个 key 之间的延迟，单位毫秒 | number | `0` | 否 |
+| `translateRuntimeChunkSize` | 翻译过程中每隔多少个 key 将翻译结果同步写入一下硬盘，防止意外中断导致浪费已翻译的 key | number | `5` | 否 |
+| `translateRuntimeMergeEnabled` | 在翻译运行时启用文案合并功能，减少 API 调用频率，显著提升翻译速度 (试验性功能). | boolean | `false` | 否 |
+| `ignoreValuesAndCopyToTarget` | 排除`fromPath`文件中指定的文案并直接拷贝到目标文件内 | string[] | `[]` | 否 |
 | `apiKeyConfig` | 用于配置非 Google 翻译的密钥信息，目前只扩展了百度翻译接口 | [ApiKeyConfig](#apikeyconfig)  | `undefined` | 否 |
 
 ### `Proxy`

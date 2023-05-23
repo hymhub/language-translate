@@ -1,10 +1,10 @@
 import { ls } from './locales.js';
-import { consoleError, consoleLog, consoleSuccess, createJsonBuffer, filterJson, isFilePath, mergeJson, splitJson } from './utils.js';
+import { consoleError, consoleLog, consoleSuccess, createJsonBuffer, filterJson, flattenObject, isFilePath, mergeJson, splitJson, unflattenObject } from './utils.js';
 import { IncrementalMode } from './types.js';
 import { getTranslator } from './translators.js';
 import fs from 'fs';
 import path from 'path';
-export const translate = async ({ input, output, fromLang, targetLang, toolsLang = 'zh-CN', proxy, apiKeyConfig, incrementalMode, translateRuntimeDelay = 0, translateRuntimeChunkSize = 5, ignoreValuesAndCopyToTarget = [] }) => {
+export const translate = async ({ input, output, fromLang, targetLang, toolsLang = 'zh-CN', proxy, apiKeyConfig, incrementalMode, translateRuntimeDelay = 0, translateRuntimeChunkSize = 5, translateRuntimeMergeEnabled = false, ignoreValuesAndCopyToTarget = [] }) => {
     if (!isFilePath(input)) {
         return;
     }
@@ -172,25 +172,71 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
         }
     };
     const fragments = splitJson(transJson);
-    let chunkJson = null;
-    const chunks = [];
-    fragments.forEach((it, idx) => {
-        if (idx % translateRuntimeChunkSize === 0) {
-            chunkJson !== null && chunks.push(chunkJson);
-            chunkJson = it;
+    if (translateRuntimeMergeEnabled) {
+        let chunkValuesLength = 0;
+        let keys = [];
+        let values = [];
+        const chunks = [];
+        fragments.forEach((it, idx) => {
+            const flattenIt = flattenObject(it);
+            const flattenItVlasLen = Object.values(flattenIt).reduce((pre, cur) => pre + cur.length, 0);
+            if (flattenItVlasLen + chunkValuesLength >= 5000) {
+                chunks.push([keys, values]);
+                chunkValuesLength = 0;
+                keys = [];
+                values = [];
+            }
+            chunkValuesLength += (flattenItVlasLen + 5); // 5-占位符
+            Object.entries(flattenIt).forEach(([key, val]) => {
+                keys.push(key);
+                values.push(val);
+            });
+        });
+        if (keys.length > 0) {
+            chunks.push([keys, values]);
+            chunkValuesLength = 0;
+            keys = [];
+            values = [];
         }
-        else if (chunkJson !== null) {
-            chunkJson = mergeJson(chunkJson, it);
+        for (let i = 0; i < chunks.length; i++) {
+            const chunk = chunks[i];
+            const prepareInputJson = { text: chunk[1].join('\n###\n') };
+            const prepareOutJson = {};
+            const resJson = await translateRun(prepareInputJson);
+            const outValues = resJson.text.split(/\n *### *\n/).map((v) => v.trim());
+            if (chunk[1].length !== outValues.length) {
+                consoleError(`${ls[toolsLang].translateRuntimeMergeEnabledErr}`);
+                consoleError(`input values ---> ${chunk[1].toString()}\n output values ---> ${outValues.toString()}}`);
+                return;
+            }
+            chunk[0].forEach((key, idx) => {
+                prepareOutJson[key] = outValues[idx];
+            });
+            const outJson = unflattenObject(prepareOutJson);
+            outJsonToFile(outJson);
         }
-    });
-    if (chunkJson !== null && Object.keys(chunkJson).length > 0) {
-        chunks.push(chunkJson);
-        chunkJson = null;
     }
-    for (let i = 0; i < chunks.length; i++) {
-        const chunk = chunks[i];
-        const resJson = await translateRun(chunk);
-        outJsonToFile(resJson);
+    else {
+        let chunkJson = null;
+        const chunks = [];
+        fragments.forEach((it, idx) => {
+            if (idx % translateRuntimeChunkSize === 0) {
+                chunkJson !== null && chunks.push(chunkJson);
+                chunkJson = it;
+            }
+            else if (chunkJson !== null) {
+                chunkJson = mergeJson(chunkJson, it);
+            }
+        });
+        if (chunkJson !== null && Object.keys(chunkJson).length > 0) {
+            chunks.push(chunkJson);
+            chunkJson = null;
+        }
+        for (let i = 0; i < chunks.length; i++) {
+            const chunk = chunks[i];
+            const resJson = await translateRun(chunk);
+            outJsonToFile(resJson);
+        }
     }
     consoleLog(outTipMsg);
 };
