@@ -155,6 +155,10 @@ export interface ExportConfig {
      * @description 在翻译运行时启用文案合并功能，减少 API 调用频率，显著提升翻译速度 (experimental).
      */
     translateRuntimeMergeEnabled?: boolean;
+    /**
+     * @default 3000
+     */
+    mergeEnabledChunkValuesLength?: number;
     ignoreValuesAndCopyToTarget?: string[];
     translate: Translate[];
 }

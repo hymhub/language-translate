@@ -28,6 +28,7 @@ export const translate = async ({
   translateRuntimeDelay = 0,
   translateRuntimeChunkSize = 5,
   translateRuntimeMergeEnabled = false,
+  mergeEnabledChunkValuesLength = 3000,
   ignoreValuesAndCopyToTarget = []
 }: {
   input: string
@@ -41,6 +42,7 @@ export const translate = async ({
   translateRuntimeDelay?: number
   translateRuntimeChunkSize?: number
   translateRuntimeMergeEnabled?: boolean
+  mergeEnabledChunkValuesLength?: number
   ignoreValuesAndCopyToTarget?: string[]
 }): Promise<undefined> => {
   if (!isFilePath(input)) {
@@ -226,7 +228,7 @@ export const translate = async ({
     fragments.forEach((it, idx) => {
       const flattenIt = flattenObject(it)
       const flattenItVlasLen = Object.values(flattenIt).reduce((pre, cur) => pre + cur.length, 0)
-      if (flattenItVlasLen + chunkValuesLength >= 5000) {
+      if (flattenItVlasLen + chunkValuesLength >= mergeEnabledChunkValuesLength) {
         chunks.push([keys, values])
         chunkValuesLength = 0
         keys = []

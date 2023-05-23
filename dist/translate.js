@@ -4,7 +4,7 @@ import { IncrementalMode } from './types.js';
 import { getTranslator } from './translators.js';
 import fs from 'fs';
 import path from 'path';
-export const translate = async ({ input, output, fromLang, targetLang, toolsLang = 'zh-CN', proxy, apiKeyConfig, incrementalMode, translateRuntimeDelay = 0, translateRuntimeChunkSize = 5, translateRuntimeMergeEnabled = false, ignoreValuesAndCopyToTarget = [] }) => {
+export const translate = async ({ input, output, fromLang, targetLang, toolsLang = 'zh-CN', proxy, apiKeyConfig, incrementalMode, translateRuntimeDelay = 0, translateRuntimeChunkSize = 5, translateRuntimeMergeEnabled = false, mergeEnabledChunkValuesLength = 3000, ignoreValuesAndCopyToTarget = [] }) => {
     if (!isFilePath(input)) {
         return;
     }
@@ -180,7 +180,7 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
         fragments.forEach((it, idx) => {
             const flattenIt = flattenObject(it);
             const flattenItVlasLen = Object.values(flattenIt).reduce((pre, cur) => pre + cur.length, 0);
-            if (flattenItVlasLen + chunkValuesLength >= 5000) {
+            if (flattenItVlasLen + chunkValuesLength >= mergeEnabledChunkValuesLength) {
                 chunks.push([keys, values]);
                 chunkValuesLength = 0;
                 keys = [];
