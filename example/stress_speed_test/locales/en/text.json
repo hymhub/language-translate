@@ -1,0 +1,408 @@
+{
+  "header": {
+    "logo": "Logo",
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "portfolio": "Portfolio",
+    "contact": "Contact",
+    "language": "Language",
+    "search": "Search",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "logout": "Logout",
+    "welcomeMessage": "Welcome to our website!",
+    "slogan": "Discover, Create, Innovate.",
+    "subheading": "We provide innovative solutions for your business.",
+    "learnMore": "Learn More",
+    "explore": "Explore",
+    "getStarted": "Get Started"
+  },
+  "home": {
+    "welcome": "Welcome",
+    "intro": "Introduction",
+    "features": "Features",
+    "pricing": "Pricing",
+    "testimonial": "Testimonial",
+    "contactUs": "Contact Us",
+    "heroSection": {
+      "title": "Transform Your Business",
+      "subtitle": "We offer cutting-edge solutions for your digital transformation.",
+      "cta": "Get Started"
+    },
+    "featureSection": {
+      "title": "Our Features",
+      "feature1": {
+        "title": "Feature 1",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+      },
+      "feature2": {
+        "title": "Feature 2",
+        "description": "Praesent varius ante vitae molestie convallis."
+      },
+      "feature3": {
+        "title": "Feature 3",
+        "description": "Fusce mattis est eget urna gravida, sit amet molestie ex efficitur."
+      }
+    },
+    "pricingSection": {
+      "title": "Choose Your Plan",
+      "description": "We have flexible pricing plans to suit your needs."
+    },
+    "testimonialSection": {
+      "title": "Testimonials",
+      "testimonial1": {
+        "name": "John Doe",
+        "designation": "CEO, ABC Company",
+        "quote": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor erat sit amet lectus aliquet sollicitudin."
+      },
+      "testimonial2": {
+        "name": "Jane Smith",
+        "designation": "CTO, XYZ Inc.",
+        "quote": "Praesent varius ante vitae molestie convallis. Nam nec libero convallis, rhoncus leo nec, gravida elit."
+      }
+    },
+    "contactSection": {
+      "title": "Contact Us",
+      "description": "Have any questions? Feel free to get in touch with us.",
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "send": "Send"
+    }
+  },
+  "about": {
+    "title": "About Us",
+    "description": "We are a leading company in providing innovative solutions for businesses worldwide.",
+    "mission": "Our Mission",
+    "missionDescription": "To empower businesses with cutting-edge technology and drive their success.",
+    "vision": "Our Vision",
+    "visionDescription": "To be the preferred partner for businesses seeking digital transformation.",
+    "values": "Our Values",
+    "valuesDescription": "Customer-centricity, Innovation, Integrity, Teamwork"
+  },
+  "services": {
+    "title": "Our Services",
+    "service1": {
+      "name": "Web Design",
+      "description": "We create stunning and user-friendly websites tailored to your business."
+    },
+    "service2": {
+      "name": "Mobile App Development",
+      "description": "We develop mobile apps for iOS and Android platforms to enhance your digital presence."
+    },
+    "service3": {
+      "name": "E-commerce Solutions",
+      "description": "We offer end-to-end e-commerce solutions for seamless online transactions."
+    },
+    "service4": {
+      "name": "Digital Marketing",
+      "description": "We provide result-driven digital marketing strategies to boost your online visibility."
+    },
+    "service5": {
+      "name": "Cloud Services",
+      "description": "We offer scalable and secure cloud solutions to streamline your business operations."
+    },
+    "service6": {
+      "name": "Consulting Services",
+      "description": "We provide expert consulting services to help you make informed business decisions."
+    }
+  },
+  "portfolio": {
+    "title": "Our Portfolio",
+    "project1": {
+      "name": "Project 1",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla in urna sed metus vulputate euismod vitae at mauris."
+    },
+    "project2": {
+      "name": "Project 2",
+      "description": "Praesent varius ante vitae molestie convallis. Nam nec libero convallis, rhoncus leo nec, gravida elit."
+    },
+    "project3": {
+      "name": "Project 3",
+      "description": "Fusce mattis est eget urna gravida, sit amet molestie ex efficitur. Sed euismod justo ac bibendum cursus."
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "description": "Get in touch with us for any inquiries or to discuss your project.",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "send": "Send"
+  },
+  "features": {
+    "title": "Features",
+    "feature1": {
+      "name": "Feature 1",
+      "description": "Enhance your productivity with our advanced tools."
+    },
+    "feature2": {
+      "name": "Feature 2",
+      "description": "Seamlessly integrate with third-party applications."
+    },
+    "feature3": {
+      "name": "Feature 3",
+      "description": "Customize your experience to meet your unique requirements."
+    },
+    "feature4": {
+      "name": "Feature 4",
+      "description": "Stay connected with real-time updates and notifications."
+    },
+    "feature5": {
+      "name": "Feature 5",
+      "description": "Optimize your workflow with automated processes."
+    },
+    "feature6": {
+      "name": "Feature 6",
+      "description": "Track and analyze your data with comprehensive reports."
+    }
+  },
+  "pricing": {
+    "title": "Pricing",
+    "basic": {
+      "name": "Basic",
+      "price": "$9.99",
+      "description": "Get started with essential features."
+    },
+    "standard": {
+      "name": "Standard",
+      "price": "$19.99",
+      "description": "Unlock additional features for growing businesses."
+    },
+    "premium": {
+      "name": "Premium",
+      "price": "$29.99",
+      "description": "Access advanced features for enterprise-level needs."
+    }
+  },
+  "testimonial": {
+    "title": "Testimonials",
+    "testimonial1": {
+      "name": "John Smith",
+      "designation": "CEO, XYZ Corporation",
+      "quote": "Our partnership with this company has been instrumental in our success. Highly recommended!"
+    },
+    "testimonial2": {
+      "name": "Emily Johnson",
+      "designation": "Marketing Director, ABC Inc.",
+      "quote": "Their expertise and dedication have helped us achieve significant growth in a short span of time."
+    },
+    "testimonial3": {
+      "name": "Michael Brown",
+      "designation": "CTO, 123 Company",
+      "quote": "The solutions provided by this company have streamlined our operations and improved efficiency."
+    }
+  },
+  "contact1": {
+    "title": "Contact Us",
+    "description": "We are here to assist you. Reach out to us for any inquiries or support.",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "send": "Send"
+  },
+  "footer": {
+    "company": "Company",
+    "about": "About",
+    "services": "Services",
+    "portfolio": "Portfolio",
+    "contact": "Contact",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "allRightsReserved": "All rights reserved."
+  },
+  "about1": {
+    "title": "About Us",
+    "description": "We are a leading provider of innovative solutions for businesses worldwide.",
+    "mission": "Our Mission",
+    "missionDescription": "To empower businesses with cutting-edge technology and drive their success.",
+    "vision": "Our Vision",
+    "visionDescription": "To be the preferred partner for businesses seeking digital transformation.",
+    "values": "Our Values",
+    "valuesDescription": "Customer satisfaction, Excellence, Collaboration, Integrity"
+  },
+  "services1": {
+    "title": "Our Services",
+    "service1": {
+      "name": "Web Development",
+      "description": "Build a powerful online presence with our expert web development services."
+    },
+    "service2": {
+      "name": "Mobile App Development",
+      "description": "Create intuitive and user-friendly mobile apps for iOS and Android platforms."
+    },
+    "service3": {
+      "name": "E-commerce Solutions",
+      "description": "Drive sales and expand your reach with our tailored e-commerce solutions."
+    },
+    "service4": {
+      "name": "Digital Marketing",
+      "description": "Boost your online visibility and engage your target audience with effective digital marketing strategies."
+    },
+    "service5": {
+      "name": "Cloud Consulting",
+      "description": "Maximize the benefits of cloud technology with our expert consulting services."
+    },
+    "service6": {
+      "name": "IT Support",
+      "description": "Ensure smooth operations and minimize downtime with our reliable IT support services."
+    }
+  },
+  "portfolio2": {
+    "title": "Our Portfolio",
+    "project1": {
+      "name": "Project A",
+      "description": "A stunning website design that showcases the client's brand identity and increases user engagement."
+    },
+    "project2": {
+      "name": "Project B",
+      "description": "A mobile app that provides seamless user experience and simplifies complex tasks for the users."
+    },
+    "project3": {
+      "name": "Project C",
+      "description": "An e-commerce platform that drives conversions and enhances the shopping experience for customers."
+    }
+  },
+  "contact2": {
+    "title": "Contact Us",
+    "description": "Have a question or need assistance? Get in touch with our friendly team.",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "send": "Send"
+  },
+  "error": {
+    "title": "Error",
+    "message": "Oops! Something went wrong. Please try again later."
+  },
+  "success": {
+    "title": "Success",
+    "message": "Your request has been successfully submitted. We will get back to you shortly."
+  },
+  "colors": {
+    "red": "Red",
+    "blue": "Blue",
+    "green": "Green",
+    "yellow": "Yellow",
+    "orange": "Orange",
+    "purple": "Purple",
+    "pink": "Pink",
+    "brown": "Brown",
+    "gray": "Gray",
+    "black": "Black",
+    "white": "White"
+  },
+  "foods": {
+    "breakfast": "Breakfast",
+    "lunch": "Lunch",
+    "dinner": "Dinner",
+    "appetizer": "Appetizer",
+    "soup": "Soup",
+    "salad": "Salad",
+    "sandwich": "Sandwich",
+    "pizza": "Pizza",
+    "pasta": "Pasta",
+    "burger": "Burger",
+    "steak": "Steak",
+    "seafood": "Seafood",
+    "sushi": "Sushi",
+    "dessert": "Dessert",
+    "cake": "Cake",
+    "iceCream": "Ice Cream",
+    "chocolate": "Chocolate",
+    "cookie": "Cookie",
+    "fruit": "Fruit",
+    "vegetable": "Vegetable",
+    "beverage": "Beverage",
+    "coffee": "Coffee",
+    "tea": "Tea",
+    "juice": "Juice",
+    "smoothie": "Smoothie"
+  },
+  "common": {
+    "loading": "Loading...",
+    "back": "Back",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "next": "Next",
+    "previous": "Previous",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "confirm": "Confirm",
+    "error": "Error",
+    "success": "Success"
+  },
+  "greetings": {
+    "hello": "Hello",
+    "hi": "Hi",
+    "hey": "Hey",
+    "goodMorning": "Good morning",
+    "goodAfternoon": "Good afternoon",
+    "goodEvening": "Good evening",
+    "goodNight": "Good night",
+    "howAreYou": "How are you?",
+    "howAreYouDoing": "How are you doing?",
+    "hopeYouAreWell": "Hope you're well",
+    "niceToMeetYou": "Nice to meet you",
+    "pleasedToMeetYou": "Pleased to meet you",
+    "thankYou": "Thank you",
+    "thanks": "Thanks",
+    "youAreWelcome": "You're welcome",
+    "haveANiceDay": "Have a nice day",
+    "takeCare": "Take care",
+    "goodLuck": "Good luck",
+    "bestWishes": "Best wishes",
+    "happyBirthday": "Happy birthday",
+    "happyHolidays": "Happy holidays",
+    "congratulations": "Congratulations",
+    "getWellSoon": "Get well soon",
+    "sorry": "Sorry",
+    "excuseMe": "Excuse me",
+    "please": "Please",
+    "yesPlease": "Yes, please",
+    "noThanks": "No, thanks"
+  },
+  "commonWords": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "portfolio": "Portfolio",
+    "contact": "Contact",
+    "learnMore": "Learn More",
+    "explore": "Explore",
+    "readMore": "Read More",
+    "viewDetails": "View Details",
+    "download": "Download",
+    "play": "Play",
+    "pause": "Pause",
+    "previous": "Previous",
+    "next": "Next",
+    "search": "Search",
+    "result": "Result",
+    "results": "Results",
+    "found": "Found",
+    "notFound": "Not Found",
+    "loading": "Loading",
+    "error": "Error",
+    "success": "Success",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "close": "Close",
+    "back": "Back",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK"
+  }
+}
