@@ -199,7 +199,8 @@ locales
 | `incrementalMode` | 增量更新模式(翻译完成后修改 fromPath 对应文件内容再次启动翻译的处理策略，详见[IncrementalMode](#incrementalmode)) | [IncrementalMode](#incrementalmode) | `IncrementalMode.cover` | 否 |
 | `translateRuntimeDelay` | 翻译过程中每个 key 之间的延迟，单位毫秒 | number | `0` | 否 |
 | `translateRuntimeChunkSize` | 翻译过程中每隔多少个 key 将翻译结果同步写入一下硬盘，防止意外中断导致浪费已翻译的 key | number | `5` | 否 |
-| `translateRuntimeMergeEnabled` | 在翻译运行时启用文案合并功能，减少 API 调用频率，显著提升翻译速度 (试验性功能). | boolean | `false` | 否 |
+| `translateRuntimeMergeEnabled` | 在翻译运行时启用文案合并功能，减少 API 调用频率，显著提升翻译速度  | boolean | `true` | 否 |
+| `mergeEnabledChunkValuesLength` | 在启用文案合并功能时限制单个合并文案的最长字符数，不要超过5000，因为 Google 翻译单次翻译字符最大限制5000  | number | `5000` | 否 |
 | `ignoreValuesAndCopyToTarget` | 排除`fromPath`文件中指定的文案并直接拷贝到目标文件内 | string[] | `[]` | 否 |
 | `apiKeyConfig` | 用于配置非 Google 翻译的密钥信息，目前只扩展了百度翻译接口 | [ApiKeyConfig](#apikeyconfig)  | `undefined` | 否 |
 

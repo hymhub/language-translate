@@ -1,6 +1,6 @@
 {
   "name": "language-translate",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "A plug-in that can translate ts/js/json multilingual files online and generate or insert specified files in batches",
   "scripts": {
     "build": "rimraf ./dist && tsc",

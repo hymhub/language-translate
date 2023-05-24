@@ -203,7 +203,8 @@ You can also output the translation results to another folder, just change the `
 | `incrementalMode` | Incremental update mode (after the translation is completed, modify the file content corresponding to fromPath and restart the translation processing strategy, see [IncrementalMode](#incrementalmode)) | [IncrementalMode](#incrementalmode) | `IncrementalMode.cover` | No |
 | `translateRuntimeDelay` | The delay between each key during translation, in milliseconds | number | `0` | No |
 | `translateRuntimeChunkSize` | During the translation process, write the translation results to the hard disk synchronously every few keys to prevent accidental interruption and waste the translated keys | number | `5` | No |
-| `translateRuntimeMergeEnabled` | Enable the text merge function when the translation is running, reducing the frequency of API calls and significantly improving the translation speed (experimental feature). | boolean | `false` | No |
+| `translateRuntimeMergeEnabled` | Enable the text merge function when the translation is running, reducing the frequency of API calls and significantly improving the translation speed | boolean | `true` | No |
+| `mergeEnabledChunkValuesLength` | Limit the maximum number of characters of a single merged text when the text merging function is enabled, and it should not exceed 5000, because Google Translate has a maximum limit of 5000 characters for a single translation | number | `5000` | No |
 | `ignoreValuesAndCopyToTarget` | Exclude the text specified in the `fromPath` file and directly copy it into the target file | string[] | `[]` | No |
 | `apiKeyConfig` | Used to configure key information for non-Google translations, currently only expands the Baidu translation interface | [ApiKeyConfig](#apikeyconfig) | `undefined` | No |
 

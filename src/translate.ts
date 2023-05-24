@@ -27,8 +27,8 @@ export const translate = async ({
   incrementalMode,
   translateRuntimeDelay = 0,
   translateRuntimeChunkSize = 5,
-  translateRuntimeMergeEnabled = false,
-  mergeEnabledChunkValuesLength = 3000,
+  translateRuntimeMergeEnabled = true,
+  mergeEnabledChunkValuesLength = 5000,
   ignoreValuesAndCopyToTarget = []
 }: {
   input: string
@@ -93,7 +93,7 @@ export const translate = async ({
     return
   }
   // ------readSourceJson end-------
-  const translateRun = async (jsonObj: Record<string, any>): Promise<Record<string, any>> => {
+  const translateRun = async (jsonObj: Record<string, any>, isMergeEnable = false): Promise<Record<string, any>> => {
     const resJsonObj: Record<string, any> = {}
     for (const key in jsonObj) {
       const text = jsonObj[key]
@@ -130,7 +130,7 @@ export const translate = async ({
           consoleLog(`delay ${translateRuntimeDelay}ms`)
           await new Promise((resolve) => setTimeout(resolve, translateRuntimeDelay))
         }
-        consoleSuccess(`${fromLang}: ${text} --${ignore ? '(with ignore copy)-' : ''}-> ${targetLang}: ${resText}`)
+        isMergeEnable || consoleSuccess(`${fromLang}: ${text} --${ignore ? '(with ignore copy)-' : ''}-> ${targetLang}: ${resText}`)
         resJsonObj[key] = resText
       } else {
         resJsonObj[key] = await translateRun(text)
@@ -228,13 +228,13 @@ export const translate = async ({
     fragments.forEach((it, idx) => {
       const flattenIt = flattenObject(it)
       const flattenItVlasLen = Object.values(flattenIt).reduce((pre, cur) => pre + cur.length, 0)
-      if (flattenItVlasLen + chunkValuesLength >= mergeEnabledChunkValuesLength) {
+      if (flattenItVlasLen + chunkValuesLength + 7 >= mergeEnabledChunkValuesLength) {
         chunks.push([keys, values])
         chunkValuesLength = 0
         keys = []
         values = []
       }
-      chunkValuesLength += (flattenItVlasLen + 5) // 5-占位符
+      chunkValuesLength += (flattenItVlasLen + 7)
       Object.entries(flattenIt).forEach(([key, val]) => {
         keys.push(key)
         values.push(val)
@@ -250,7 +250,7 @@ export const translate = async ({
       const chunk = chunks[i]
       const prepareInputJson = { text: chunk[1].join('\n###\n') }
       const prepareOutJson: Record<string, string> = {}
-      const resJson = await translateRun(prepareInputJson)
+      const resJson = await translateRun(prepareInputJson, true)
       const outValues: string[] = resJson.text.split(/\n *### *\n/).map((v: string) => v.trim())
       if (chunk[1].length !== outValues.length) {
         consoleError(
@@ -262,6 +262,11 @@ export const translate = async ({
         return
       }
       chunk[0].forEach((key, idx) => {
+        const ignore = ignoreValuesAndCopyToTarget.includes(chunk[1][idx])
+        if (ignore) {
+          outValues[idx] = chunk[1][idx]
+        }
+        consoleSuccess(`${fromLang}: ${chunk[1][idx]} --${ignore ? '(with ignore copy)-' : ''}-> ${targetLang}: ${outValues[idx]}`)
         prepareOutJson[key] = outValues[idx]
       })
       const outJson = unflattenObject(prepareOutJson)

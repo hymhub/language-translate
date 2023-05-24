@@ -150,13 +150,12 @@ export interface ExportConfig {
      */
     translateRuntimeChunkSize?: number;
     /**
-     * @experimental 试验性功能
-     * @default false
-     * @description 在翻译运行时启用文案合并功能，减少 API 调用频率，显著提升翻译速度 (experimental).
+     * @default true
+     * @description 在翻译运行时启用文案合并功能，减少 API 调用频率，显著提升翻译速度.
      */
     translateRuntimeMergeEnabled?: boolean;
     /**
-     * @default 3000
+     * @default 5000
      */
     mergeEnabledChunkValuesLength?: number;
     ignoreValuesAndCopyToTarget?: string[];

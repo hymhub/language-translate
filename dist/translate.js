@@ -4,7 +4,7 @@ import { IncrementalMode } from './types.js';
 import { getTranslator } from './translators.js';
 import fs from 'fs';
 import path from 'path';
-export const translate = async ({ input, output, fromLang, targetLang, toolsLang = 'zh-CN', proxy, apiKeyConfig, incrementalMode, translateRuntimeDelay = 0, translateRuntimeChunkSize = 5, translateRuntimeMergeEnabled = false, mergeEnabledChunkValuesLength = 3000, ignoreValuesAndCopyToTarget = [] }) => {
+export const translate = async ({ input, output, fromLang, targetLang, toolsLang = 'zh-CN', proxy, apiKeyConfig, incrementalMode, translateRuntimeDelay = 0, translateRuntimeChunkSize = 5, translateRuntimeMergeEnabled = true, mergeEnabledChunkValuesLength = 5000, ignoreValuesAndCopyToTarget = [] }) => {
     if (!isFilePath(input)) {
         return;
     }
@@ -47,7 +47,7 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
         return;
     }
     // ------readSourceJson end-------
-    const translateRun = async (jsonObj) => {
+    const translateRun = async (jsonObj, isMergeEnable = false) => {
         const resJsonObj = {};
         for (const key in jsonObj) {
             const text = jsonObj[key];
@@ -86,7 +86,7 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
                     consoleLog(`delay ${translateRuntimeDelay}ms`);
                     await new Promise((resolve) => setTimeout(resolve, translateRuntimeDelay));
                 }
-                consoleSuccess(`${fromLang}: ${text} --${ignore ? '(with ignore copy)-' : ''}-> ${targetLang}: ${resText}`);
+                isMergeEnable || consoleSuccess(`${fromLang}: ${text} --${ignore ? '(with ignore copy)-' : ''}-> ${targetLang}: ${resText}`);
                 resJsonObj[key] = resText;
             }
             else {
@@ -180,13 +180,13 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
         fragments.forEach((it, idx) => {
             const flattenIt = flattenObject(it);
             const flattenItVlasLen = Object.values(flattenIt).reduce((pre, cur) => pre + cur.length, 0);
-            if (flattenItVlasLen + chunkValuesLength >= mergeEnabledChunkValuesLength) {
+            if (flattenItVlasLen + chunkValuesLength + 7 >= mergeEnabledChunkValuesLength) {
                 chunks.push([keys, values]);
                 chunkValuesLength = 0;
                 keys = [];
                 values = [];
             }
-            chunkValuesLength += (flattenItVlasLen + 5); // 5-占位符
+            chunkValuesLength += (flattenItVlasLen + 7);
             Object.entries(flattenIt).forEach(([key, val]) => {
                 keys.push(key);
                 values.push(val);
@@ -202,7 +202,7 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
             const chunk = chunks[i];
             const prepareInputJson = { text: chunk[1].join('\n###\n') };
             const prepareOutJson = {};
-            const resJson = await translateRun(prepareInputJson);
+            const resJson = await translateRun(prepareInputJson, true);
             const outValues = resJson.text.split(/\n *### *\n/).map((v) => v.trim());
             if (chunk[1].length !== outValues.length) {
                 consoleError(`${ls[toolsLang].translateRuntimeMergeEnabledErr}`);
@@ -210,6 +210,11 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
                 return;
             }
             chunk[0].forEach((key, idx) => {
+                const ignore = ignoreValuesAndCopyToTarget.includes(chunk[1][idx]);
+                if (ignore) {
+                    outValues[idx] = chunk[1][idx];
+                }
+                consoleSuccess(`${fromLang}: ${chunk[1][idx]} --${ignore ? '(with ignore copy)-' : ''}-> ${targetLang}: ${outValues[idx]}`);
                 prepareOutJson[key] = outValues[idx];
             });
             const outJson = unflattenObject(prepareOutJson);
