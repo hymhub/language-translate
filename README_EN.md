@@ -79,7 +79,7 @@ Create `translate.entry.(js|ts|json)` in the root directory of your project. The
 For example, in the root directory create `translate.entry.json`
 ```json
 {
-  "hello": "Hello {{{name}}}, how are you today?",
+  "hello": "Hello {{name}}, how are you today?",
   "button": {
     "confirm": "confirm",
     "cancel": "cancel"

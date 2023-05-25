@@ -78,7 +78,7 @@ export default defineConfig({
 例如在根目录创建 `translate.entry.json`
 ```json
 {
-  "hello": "Hello {{{name}}}, how are you today?",
+  "hello": "Hello {{name}}, how are you today?",
   "button": {
     "confirm": "confirm",
     "cancel": "cancel"
