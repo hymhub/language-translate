@@ -11,8 +11,8 @@ import {
   splitJson,
   unflattenObject
 } from './utils.js'
-import type { Proxy, Lang, ApiKeyConfig } from './types'
-import { IncrementalMode } from './types.js'
+import type { Proxy, ApiKeyConfig } from './types'
+import { IncrementalMode, Lang } from './types.js'
 import { getTranslator } from './translators.js'
 import fs from 'fs'
 import path from 'path'
@@ -228,13 +228,13 @@ export const translate = async ({
     fragments.forEach((it, idx) => {
       const flattenIt = flattenObject(it)
       const flattenItVlasLen = Object.values(flattenIt).reduce((pre, cur) => pre + cur.length, 0)
-      if (flattenItVlasLen + chunkValuesLength + 7 >= mergeEnabledChunkValuesLength) {
+      if (flattenItVlasLen + chunkValuesLength + 14 >= mergeEnabledChunkValuesLength) {
         chunks.push([keys, values])
         chunkValuesLength = 0
         keys = []
         values = []
       }
-      chunkValuesLength += (flattenItVlasLen + 7)
+      chunkValuesLength += (flattenItVlasLen + 14)
       Object.entries(flattenIt).forEach(([key, val]) => {
         keys.push(key)
         values.push(val)
@@ -248,16 +248,19 @@ export const translate = async ({
     }
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[i]
-      const prepareInputJson = { text: chunk[1].join('\n###\n') }
+      const prepareInputJson = { text: chunk[1].join(targetLang === Lang.te ? '\n###\n' : '\n[_]\n') }
       const prepareOutJson: Record<string, string> = {}
       const resJson = await translateRun(prepareInputJson, true)
-      const outValues: string[] = resJson.text.split(/\n *### *\n/).map((v: string) => v.trim())
+      const outValues: string[] = resJson.text.split(targetLang === Lang.te ? /\n *# *# *# *\n/ : /\n *\[ *_ *\] *\n/).map((v: string) => v.trim())
       if (chunk[1].length !== outValues.length) {
         consoleError(
-          `${ls[toolsLang].translateRuntimeMergeEnabledErr}`
+          `${ls[toolsLang].translateRuntimeMergeEnabledErr}${targetLang}`
         )
         consoleError(
-          `input values ---> ${chunk[1].toString()}\n output values ---> ${outValues.toString()}}`
+          `input values length: ${chunk[1].length} --- output values length: ${outValues.length}`
+        )
+        consoleError(
+          `input values ---> ${chunk[1].toString().slice(0, 100)}... ...\n output values ---> ${outValues.toString().slice(0, 100)}... ...`
         )
         return
       }
