@@ -25,9 +25,15 @@ language-translate is a plug-in that converts ts/js/json multilingual files onli
   </a>
 <p>
 
-<p align="center">
-  <img src="./md/demo_en.gif">
-<p>
+## Effect demonstration
+
+### Normal translation effect:
+
+![demo.gif](./md/demo_en.gif)
+
+### Stress test (100 language packs generated within 1 minute):
+
+![demo.gif](./md/stress_speed_test.gif)
 
 ## Install
 

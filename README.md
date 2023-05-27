@@ -25,9 +25,15 @@ language-translate 是一款基于 Google 翻译在线转换 ts/js/json 多语�
   </a>
 <p>
 
-<p align="center">
-  <img src="./md/demo.gif">
-<p>
+## 效果演示
+
+### 正常翻译效果:
+
+![demo.gif](./md/demo_en.gif)
+
+### 压力测试(1分钟内生成100种语言包):
+
+![demo.gif](./md/stress_speed_test.gif)
 
 ## 安装
 
