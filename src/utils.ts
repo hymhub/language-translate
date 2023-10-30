@@ -1,7 +1,6 @@
 import type { ExportConfig, TargetConfig, Lang } from './types'
 import fs from 'fs'
 import path from 'path'
-import chalk from 'chalk'
 import { DataTypes, typeis } from 'typeof-plus'
 
 const cwd = process.cwd()
@@ -213,10 +212,10 @@ export const unflattenObject = (obj: Record<string, string>): Record<string, any
   return result
 }
 
-export const consoleSuccess = (...msg: string[]): void => { console.log(chalk.green(...msg)) }
+export const consoleSuccess = (...msg: string[]): void => { console.log('\x1b[32m%s\x1b[0m', ...msg) }
 
-export const consoleLog = (...msg: string[]): void => { console.log(chalk.blue(...msg)) }
+export const consoleLog = (...msg: string[]): void => { console.log('\x1b[34m%s\x1b[0m', ...msg) }
 
-export const consoleWarn = (...msg: string[]): void => { console.log(chalk.yellow(...msg)) }
+export const consoleWarn = (...msg: string[]): void => { console.log('\x1b[33m%s\x1b[0m', ...msg) }
 
-export const consoleError = (...msg: string[]): void => { console.log(chalk.red(...msg)) }
+export const consoleError = (...msg: string[]): void => { console.log('\x1b[31m%s\x1b[0m', ...msg) }

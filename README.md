@@ -244,14 +244,19 @@ locales
 export enum TranslateService {
   baidu = 'baidu',
   google = 'google',
+  deepl = 'deepl'
 }
 export interface BaiduApiKeyConfig {
   appId: string
   appKey: string
 }
+export interface DeepLApiKeyConfig {
+  authKey: string
+}
 export interface ApiKeyConfig {
   type: TranslateService
   [TranslateService.baidu]?: BaiduApiKeyConfig
+  [TranslateService.deepl]?: DeepLApiKeyConfig
 }
 ```
 
