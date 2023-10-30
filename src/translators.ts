@@ -1,10 +1,12 @@
 import tunnel from 'tunnel'
 import google from '@vitalets/google-translate-api'
 import Baidu from './baidufanyi.js'
+import * as deepl from 'deepl-node'
 import type { Lang, Proxy, ApiKeyConfig } from './types'
 import { TranslateService } from './types.js'
 import { consoleError, consoleWarn, getBaiduLangCode } from './utils.js'
 import { ls } from './locales.js'
+import { name as appName, version as appVersion } from '../package.json'
 
 export const getTranslator = ({
   fromLang,
@@ -99,11 +101,63 @@ export const getTranslator = ({
     run()
   })
 
+  const deepLTranslator = async (
+    key: string
+  ): Promise<string> => await new Promise((resolve, reject) => {
+    let authKey = apiKeyConfig?.[TranslateService.deepl]?.authKey ?? ''
+    if (
+      apiKeyConfig === undefined ||
+      apiKeyConfig[TranslateService.deepl] === undefined ||
+      apiKeyConfig[TranslateService.deepl] === undefined
+    ) {
+      authKey = ''
+      // consoleError(ls[toolsLang].notHasBaiduKey)
+      // return
+    }
+    const appInfo = { appName, appVersion }
+    const translator = new deepl.Translator(authKey, {
+      ...((proxy != null)
+        ? {
+            proxy: {
+              host: proxy.host,
+              port: proxy.port
+            }
+          }
+        : null),
+      appInfo
+    })
+    let failedNum = 0
+    const run: () => void = () => {
+      translator.translateText(key, fromLang, targetLang, { preserveFormatting: true })
+        .then(({ text }) => {
+          resolve(text)
+        })
+        .catch((err) => {
+          if (++failedNum > 10) {
+            consoleError(ls[toolsLang].checkNetwork)
+            consoleError(err)
+            reject(err)
+          } else {
+            consoleWarn(ls[toolsLang].retry)
+            consoleError(err)
+            setTimeout(() => {
+              run()
+            }, 1000)
+          }
+        })
+    }
+    run()
+  })
+
   return async (key: string): Promise<string> => {
     if (apiKeyConfig != null) {
       switch (apiKeyConfig.type) {
+        case TranslateService.google:
+          return await googleTranslator(key)
         case TranslateService.baidu:
           return await baiduTranslator(key)
+        case TranslateService.deepl:
+          return await deepLTranslator(key)
         default:
           break
       }

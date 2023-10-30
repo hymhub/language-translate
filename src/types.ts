@@ -210,6 +210,7 @@ export enum Lang {
 export enum TranslateService {
   baidu = 'baidu',
   google = 'google',
+  deepl = 'deepl'
 }
 
 export interface Proxy {
@@ -222,9 +223,14 @@ export interface BaiduApiKeyConfig {
   appKey: string
 }
 
+export interface DeepLApiKeyConfig {
+  authKey: string
+}
+
 export interface ApiKeyConfig {
   type: TranslateService
   [TranslateService.baidu]?: BaiduApiKeyConfig
+  [TranslateService.deepl]?: DeepLApiKeyConfig
 }
 
 export interface TargetConfig {
