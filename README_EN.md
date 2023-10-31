@@ -243,19 +243,24 @@ You can also output the translation results to another folder, just change the `
 | `fast` | fast mode: If there is an existing key in the target file and the value is not empty, it will be excluded during translation, otherwise add a new key, if you don’t understand it, you can go to the project [example](https://github.com/hymhub/language-translate/tree/main/example) directory to view examples |
 
 ### `ApiKeyConfig`
-It is used to configure the key information of non-Google translations. The free version of Baidu Translation API limits the request frequency, which is very tasteless. If you have to use Baidu, it is recommended to use the paid premium version
+Used to configure non-Google Translate key information, currently extended DeepL and Baidu Translate, DeepL distinguishes between input and output language code, if you use DeepL, please follow DeepL official language code configuration. The free version of Baidu Translator API limits the request frequency and the effect is very poor, if you have to use Baidu, we suggest you to use the paid premium version.
 ```typescript
 export enum TranslateService {
   baidu = 'baidu',
   google = 'google',
+  deepl = 'deepl'
 }
 export interface BaiduApiKeyConfig {
   appId: string
   appKey: string
 }
+export interface DeepLApiKeyConfig {
+  authKey: string
+}
 export interface ApiKeyConfig {
   type: TranslateService
   [TranslateService.baidu]?: BaiduApiKeyConfig
+  [TranslateService.deepl]?: DeepLApiKeyConfig
 }
 ```
 

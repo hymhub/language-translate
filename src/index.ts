@@ -1,5 +1,5 @@
 import { loadConfig } from 'unconfig'
-import type { ExportConfig, TargetConfig, Lang } from './types'
+import type { ExportConfig, TargetConfig, Lang, SourceLanguageCode, TargetLanguageCode } from './types'
 import { IncrementalMode } from './types.js'
 import { Command } from 'commander'
 import { translate } from './translate.js'
@@ -21,8 +21,8 @@ program.description('Translate a single js/ts/json file')
   .action(async (options: {
     input?: string
     output?: string
-    fromlang?: Lang
-    targetlang?: Lang
+    fromlang?: Lang | SourceLanguageCode
+    targetlang?: Lang | TargetLanguageCode
     host?: string
     port?: number
   }) => {

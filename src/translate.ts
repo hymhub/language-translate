@@ -11,7 +11,7 @@ import {
   splitJson,
   unflattenObject
 } from './utils.js'
-import type { Proxy, ApiKeyConfig } from './types'
+import type { Proxy, ApiKeyConfig, SourceLanguageCode, TargetLanguageCode } from './types'
 import { IncrementalMode, Lang } from './types.js'
 import { getTranslator } from './translators.js'
 import fs from 'fs'
@@ -33,8 +33,8 @@ export const translate = async ({
 }: {
   input: string
   output: string
-  fromLang: Lang
-  targetLang: Lang
+  fromLang: Lang | SourceLanguageCode
+  targetLang: Lang | TargetLanguageCode
   toolsLang?: 'en' | 'zh-CN'
   proxy?: Proxy
   apiKeyConfig?: ApiKeyConfig

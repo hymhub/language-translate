@@ -1,0 +1,10 @@
+{
+	"body":"körper",
+	"hello":"hallo{{{name}}}, Wie geht es Ihnen heute?",
+	"cool":"cool",
+	"export":"export",
+	"number":{
+		"one":"eine",
+		"two":"zwei"
+	}
+}

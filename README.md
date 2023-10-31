@@ -239,7 +239,7 @@ locales
 | `fast` | 快速模式: 目标文件中已有 key 并且值不为空在翻译时会排除, 否则新增 key, 如果不理解可以去项目 [example](https://github.com/hymhub/language-translate/tree/main/example) 目录查看例子 |
 
 ### `ApiKeyConfig`
-用于配置非 Google 翻译的密钥信息，百度翻译API免费版限制请求频率，非常鸡肋，非要用百度建议使用付费高级版
+用于配置非 Google 翻译的密钥信息，目前扩展了 DeepL 和百度翻译，DeepL 区分输入和输出语言代码，若使用 DeepL 请按照 DeepL 官方语言代码配置。百度翻译API免费版限制请求频率，效果很差，非要用百度建议使用付费高级版
 ```typescript
 export enum TranslateService {
   baidu = 'baidu',

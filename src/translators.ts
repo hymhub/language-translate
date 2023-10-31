@@ -2,11 +2,17 @@ import tunnel from 'tunnel'
 import google from '@vitalets/google-translate-api'
 import Baidu from './baidufanyi.js'
 import * as deepl from 'deepl-node'
-import type { Lang, Proxy, ApiKeyConfig } from './types'
+import type { Lang, Proxy, ApiKeyConfig, SourceLanguageCode, TargetLanguageCode } from './types'
 import { TranslateService } from './types.js'
 import { consoleError, consoleWarn, getBaiduLangCode } from './utils.js'
 import { ls } from './locales.js'
-import { name as appName, version as appVersion } from '../package.json'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const _dirname = path.dirname(fileURLToPath(import.meta.url))
+
+const { name: appName, version: appVersion } = JSON.parse(fs.readFileSync(path.join(_dirname, '../package.json')).toString())
 
 export const getTranslator = ({
   fromLang,
@@ -15,8 +21,8 @@ export const getTranslator = ({
   toolsLang,
   apiKeyConfig
 }: {
-  fromLang: Lang
-  targetLang: Lang
+  fromLang: Lang | SourceLanguageCode
+  targetLang: Lang | TargetLanguageCode
   proxy?: Proxy
   toolsLang: 'en' | 'zh-CN'
   apiKeyConfig?: ApiKeyConfig
@@ -65,8 +71,8 @@ export const getTranslator = ({
   ): Promise<string> => await new Promise((resolve, reject) => {
     if (
       apiKeyConfig === undefined ||
-      apiKeyConfig[TranslateService.baidu] === undefined ||
-      apiKeyConfig[TranslateService.baidu] === undefined
+      apiKeyConfig[TranslateService.baidu]?.appId === undefined ||
+      apiKeyConfig[TranslateService.baidu]?.appKey === undefined
     ) {
       consoleError(ls[toolsLang].notHasBaiduKey)
       return
@@ -78,8 +84,8 @@ export const getTranslator = ({
     let failedNum = 0
     const run: () => void = () => {
       baidu.translate(key, {
-        from: getBaiduLangCode(fromLang),
-        to: getBaiduLangCode(targetLang)
+        from: getBaiduLangCode(fromLang as Lang),
+        to: getBaiduLangCode(targetLang as Lang)
       })
         .then((text) => {
           resolve(text)
@@ -104,18 +110,15 @@ export const getTranslator = ({
   const deepLTranslator = async (
     key: string
   ): Promise<string> => await new Promise((resolve, reject) => {
-    let authKey = apiKeyConfig?.[TranslateService.deepl]?.authKey ?? ''
     if (
       apiKeyConfig === undefined ||
-      apiKeyConfig[TranslateService.deepl] === undefined ||
-      apiKeyConfig[TranslateService.deepl] === undefined
+      apiKeyConfig[TranslateService.deepl]?.authKey === undefined
     ) {
-      authKey = ''
-      // consoleError(ls[toolsLang].notHasBaiduKey)
-      // return
+      consoleError(ls[toolsLang].notHasBaiduKey)
+      return
     }
     const appInfo = { appName, appVersion }
-    const translator = new deepl.Translator(authKey, {
+    const translator = new deepl.Translator(apiKeyConfig[TranslateService.deepl]?.authKey, {
       ...((proxy != null)
         ? {
             proxy: {
@@ -128,7 +131,7 @@ export const getTranslator = ({
     })
     let failedNum = 0
     const run: () => void = () => {
-      translator.translateText(key, fromLang, targetLang, { preserveFormatting: true })
+      translator.translateText(key, fromLang as SourceLanguageCode, targetLang as TargetLanguageCode, { preserveFormatting: true })
         .then(({ text }) => {
           resolve(text)
         })

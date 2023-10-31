@@ -1,0 +1,10 @@
+{
+	"body":"body",
+	"hello":"hello{{{name}}}, 안녕하세요?",
+	"cool":"cool",
+	"export":"export",
+	"number":{
+		"one":"one",
+		"two":"two"
+	}
+}

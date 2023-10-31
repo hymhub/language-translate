@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "language-translate": "^2.2.3"
+    "language-translate": "^2.2.4"
   }
 }
