@@ -207,6 +207,26 @@ export enum Lang {
   'zu' = 'zu'
 }
 
+type CommonLanguageCode = 'bg' | 'cs' | 'da' | 'de' | 'el' | 'es' | 'et' | 'fi' | 'fr' | 'hu' | 'id' | 'it' | 'ja' | 'ko' | 'lt' | 'lv' | 'nb' | 'nl' | 'pl' | 'ro' | 'ru' | 'sk' | 'sl' | 'sv' | 'tr' | 'uk' | 'zh'
+/**
+ * Language codes that may be used as a source language.
+ * Note: although the language code type definitions are case-sensitive, this package and the DeepL
+ * API accept case-insensitive language codes.
+ */
+export type SourceLanguageCode = CommonLanguageCode | 'en' | 'pt'
+/**
+ * Language codes that may be used as a target language.
+ * Note: although the language code type definitions are case-sensitive, this package and the DeepL
+ * API accept case-insensitive language codes.
+ */
+export type TargetLanguageCode = CommonLanguageCode | 'en-GB' | 'en-US' | 'pt-BR' | 'pt-PT'
+/**
+ * All language codes, including source-only and target-only language codes.
+ * Note: although the language code type definitions are case-sensitive, this package and the DeepL
+ * API accept case-insensitive language codes.
+ */
+export type LanguageCode = SourceLanguageCode | TargetLanguageCode
+
 export enum TranslateService {
   baidu = 'baidu',
   google = 'google',
@@ -234,7 +254,7 @@ export interface ApiKeyConfig {
 }
 
 export interface TargetConfig {
-  targetLang: Lang
+  targetLang: Lang | TargetLanguageCode
   outPath: string
   rewrite?: (fileName: string) => string
 }
@@ -255,7 +275,7 @@ export interface ExportConfig {
    */
   toolsLang?: 'en' | 'zh-CN'
   proxy?: Proxy
-  fromLang: Lang
+  fromLang: Lang | SourceLanguageCode
   /**
    * @default 'translate.entry.json'
    */
