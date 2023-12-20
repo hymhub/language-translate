@@ -1,6 +1,6 @@
 {
   "name": "language-translate",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "A plug-in that can translate ts/js/json multilingual files online and generate or insert specified files in batches",
   "scripts": {
     "build": "rimraf ./dist && tsc",
@@ -59,6 +59,7 @@
     "deepl-node": "^1.10.2",
     "fast-glob": "^3.2.12",
     "inquirer": "^9.1.5",
+    "prettier": "^3.1.1",
     "tunnel": "^0.0.6",
     "typeof-plus": "^1.0.5",
     "unconfig": "^0.3.5"

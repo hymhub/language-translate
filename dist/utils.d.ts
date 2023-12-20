@@ -3,7 +3,6 @@ export declare const getRootPath: () => string;
 export declare const defineConfig: (config: ExportConfig) => ExportConfig;
 export declare const getFile: (filePath: string) => string;
 export declare const getFiles: (entry: string, deep: boolean) => string[];
-export declare const createJsonBuffer: (val: Record<string, any>, tN?: number) => string;
 export declare const mergeJson: (json1: Record<string, any>, json2: Record<string, any>) => Record<string, any>;
 export declare const filterJson: (json1: Record<string, any>, json2: Record<string, any>) => Record<string, any>;
 export declare const isFilePath: (path: string) => boolean;

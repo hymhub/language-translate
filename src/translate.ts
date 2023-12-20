@@ -3,7 +3,6 @@ import {
   consoleError,
   consoleLog,
   consoleSuccess,
-  createJsonBuffer,
   filterJson,
   flattenObject,
   isFilePath,
@@ -16,6 +15,7 @@ import { IncrementalMode, Lang } from './types.js'
 import { getTranslator } from './translators.js'
 import fs from 'fs'
 import path from 'path'
+import prettier from 'prettier'
 export const translate = async ({
   input,
   output,
@@ -191,7 +191,7 @@ export const translate = async ({
   }
   // ------read out json end-----
   let outTipMsg: string = ''
-  const outJsonToFile = (resJson: Record<string, any>): void => {
+  const outJsonToFile = async (resJson: Record<string, any>): Promise<void> => {
     startStr = ''
     funValues = []
     outFile = null
@@ -199,18 +199,20 @@ export const translate = async ({
     if (readOutFile()) {
       return
     }
-    let outPutBuffer = ((outFile != null) ? startStr : inputStartStr) + '{\n'
+    let outPutBuffer = (outFile != null ? startStr : inputStartStr) + '{'
     funValues.forEach((item) => {
-      outPutBuffer += `\t${item}`
+      outPutBuffer += `${item}`
     })
     if (outFile != null) {
-      outPutBuffer += createJsonBuffer(mergeJson(outTextJson, resJson)).slice(2)
+      outPutBuffer += JSON.stringify(mergeJson(outTextJson, resJson)).slice(1)
+      outPutBuffer = await prettier.format(outPutBuffer, { parser: output.endsWith('.json') ? 'json' : 'typescript' })
       fs.writeFileSync(output, outPutBuffer)
       if (outTipMsg.length === 0) {
         outTipMsg = `${ls[toolsLang].patchSuccess} --> ${output}`
       }
     } else {
-      outPutBuffer += createJsonBuffer(resJson).slice(2)
+      outPutBuffer += JSON.stringify(resJson).slice(1)
+      outPutBuffer = await prettier.format(outPutBuffer, { parser: output.endsWith('.json') ? 'json' : 'typescript' })
       const outDirname = path.dirname(output)
       fs.existsSync(outDirname) || fs.mkdirSync(outDirname, { recursive: true })
       fs.writeFileSync(output, outPutBuffer)
@@ -273,7 +275,7 @@ export const translate = async ({
         prepareOutJson[key] = outValues[idx]
       })
       const outJson = unflattenObject(prepareOutJson)
-      outJsonToFile(outJson)
+      await outJsonToFile(outJson)
     }
   } else {
     let chunkJson: Record<string, any> | null = null
@@ -293,7 +295,7 @@ export const translate = async ({
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[i]
       const resJson = await translateRun(chunk)
-      outJsonToFile(resJson)
+      await outJsonToFile(resJson)
     }
   }
 

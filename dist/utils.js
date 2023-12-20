@@ -28,25 +28,6 @@ export const getFiles = (entry, deep) => {
     readDir(entry);
     return result;
 };
-export const createJsonBuffer = (val, tN) => {
-    tN = tN !== null && tN !== void 0 ? tN : 1;
-    let outputBuffer = '{\n';
-    let t = '';
-    for (let index = 0; index < tN; index++) {
-        t += '\t';
-    }
-    for (const textKey in val) {
-        if (typeof val[textKey] === 'string') {
-            outputBuffer += `${t}${JSON.stringify({ [textKey]: val[textKey] }).slice(1, -1)},\n`;
-        }
-        else {
-            outputBuffer += `${t}"${textKey}":${createJsonBuffer(val[textKey], tN + 1)},\n`;
-        }
-    }
-    outputBuffer = outputBuffer.slice(0, -2);
-    outputBuffer += `\n${t.slice(1)}}`;
-    return outputBuffer;
-};
 export const mergeJson = (json1, json2) => {
     var _a;
     for (const key in json2) {

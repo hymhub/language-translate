@@ -33,31 +33,6 @@ export const getFiles = (entry: string, deep: boolean): string[] => {
   return result
 }
 
-export const createJsonBuffer = (val: Record<string, any>, tN?: number): string => {
-  tN = tN ?? 1
-  let outputBuffer = '{\n'
-  let t = ''
-  for (let index = 0; index < tN; index++) {
-    t += '\t'
-  }
-  for (const textKey in val) {
-    if (typeof val[textKey] === 'string') {
-      outputBuffer += `${t}${JSON.stringify({ [textKey]: val[textKey] }).slice(
-        1,
-        -1
-      )},\n`
-    } else {
-      outputBuffer += `${t}"${textKey}":${createJsonBuffer(
-        val[textKey],
-        tN + 1
-      )},\n`
-    }
-  }
-  outputBuffer = outputBuffer.slice(0, -2)
-  outputBuffer += `\n${t.slice(1)}}`
-  return outputBuffer
-}
-
 export const mergeJson = (
   json1: Record<string, any>,
   json2: Record<string, any>

@@ -1,9 +1,10 @@
 import { ls } from './locales.js';
-import { consoleError, consoleLog, consoleSuccess, createJsonBuffer, filterJson, flattenObject, isFilePath, mergeJson, splitJson, unflattenObject } from './utils.js';
+import { consoleError, consoleLog, consoleSuccess, filterJson, flattenObject, isFilePath, mergeJson, splitJson, unflattenObject } from './utils.js';
 import { IncrementalMode, Lang } from './types.js';
 import { getTranslator } from './translators.js';
 import fs from 'fs';
 import path from 'path';
+import prettier from 'prettier';
 export const translate = async ({ input, output, fromLang, targetLang, toolsLang = 'zh-CN', proxy, apiKeyConfig, incrementalMode, translateRuntimeDelay = 0, translateRuntimeChunkSize = 5, translateRuntimeMergeEnabled = true, mergeEnabledChunkValuesLength = 5000, ignoreValuesAndCopyToTarget = [] }) => {
     if (!isFilePath(input)) {
         return;
@@ -142,7 +143,7 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
     }
     // ------read out json end-----
     let outTipMsg = '';
-    const outJsonToFile = (resJson) => {
+    const outJsonToFile = async (resJson) => {
         startStr = '';
         funValues = [];
         outFile = null;
@@ -150,19 +151,21 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
         if (readOutFile()) {
             return;
         }
-        let outPutBuffer = ((outFile != null) ? startStr : inputStartStr) + '{\n';
+        let outPutBuffer = (outFile != null ? startStr : inputStartStr) + '{';
         funValues.forEach((item) => {
-            outPutBuffer += `\t${item}`;
+            outPutBuffer += `${item}`;
         });
         if (outFile != null) {
-            outPutBuffer += createJsonBuffer(mergeJson(outTextJson, resJson)).slice(2);
+            outPutBuffer += JSON.stringify(mergeJson(outTextJson, resJson)).slice(1);
+            outPutBuffer = await prettier.format(outPutBuffer, { parser: output.endsWith('.json') ? 'json' : 'typescript' });
             fs.writeFileSync(output, outPutBuffer);
             if (outTipMsg.length === 0) {
                 outTipMsg = `${ls[toolsLang].patchSuccess} --> ${output}`;
             }
         }
         else {
-            outPutBuffer += createJsonBuffer(resJson).slice(2);
+            outPutBuffer += JSON.stringify(resJson).slice(1);
+            outPutBuffer = await prettier.format(outPutBuffer, { parser: output.endsWith('.json') ? 'json' : 'typescript' });
             const outDirname = path.dirname(output);
             fs.existsSync(outDirname) || fs.mkdirSync(outDirname, { recursive: true });
             fs.writeFileSync(output, outPutBuffer);
@@ -219,7 +222,7 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
                 prepareOutJson[key] = outValues[idx];
             });
             const outJson = unflattenObject(prepareOutJson);
-            outJsonToFile(outJson);
+            await outJsonToFile(outJson);
         }
     }
     else {
@@ -241,7 +244,7 @@ export const translate = async ({ input, output, fromLang, targetLang, toolsLang
         for (let i = 0; i < chunks.length; i++) {
             const chunk = chunks[i];
             const resJson = await translateRun(chunk);
-            outJsonToFile(resJson);
+            await outJsonToFile(resJson);
         }
     }
     consoleLog(outTipMsg);
