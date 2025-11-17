@@ -3,4 +3,6 @@
 # dist
 # test
 node_modules
+*.7z
+.idea
 example/*/package-lock.json
