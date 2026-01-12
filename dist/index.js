@@ -1,12 +1,12 @@
-import { loadConfig } from 'unconfig';
-import { IncrementalMode } from './types.js';
 import { Command } from 'commander';
-import { translate } from './translate.js';
-import { consoleError, getOutPath, getRootPath } from './utils.js';
-import { ls } from './locales.js';
+import fg from 'fast-glob';
 import inquirer from 'inquirer';
 import path from 'path';
-import fg from 'fast-glob';
+import { loadConfig } from 'unconfig';
+import { ls } from './locales.js';
+import { translate } from './translate.js';
+import { IncrementalMode } from './types.js';
+import { consoleError, getOutPath, getRootPath } from './utils.js';
 const program = new Command();
 program.description('Translate a single js/ts/json file')
     .option('-i, --input <string>', 'source file path')
@@ -15,9 +15,10 @@ program.description('Translate a single js/ts/json file')
     .option('-t, --targetlang <Lang>', 'target file language')
     .option('-h, --host <string>', 'proxy host')
     .option('-p, --port <string>', 'proxy port')
+    .option('-c, --config <string>', 'config file path')
     .action(async (options) => {
     var _a, _b;
-    if (Object.keys(options).length > 0) {
+    if (Object.keys(options).filter(v => v !== 'config').length > 0) {
         if (options.input !== undefined &&
             options.output !== undefined &&
             options.fromlang &&
@@ -33,9 +34,9 @@ program.description('Translate a single js/ts/json file')
                 proxy: options.host !== undefined && options.port !== undefined
                     ? {
                         host: options.host,
-                        port: Number(options.port)
+                        port: Number(options.port),
                     }
-                    : undefined
+                    : undefined,
             });
         }
         else {
@@ -46,10 +47,10 @@ program.description('Translate a single js/ts/json file')
         const { config } = await loadConfig({
             sources: [
                 {
-                    files: 'translate.config',
-                    extensions: ['ts', 'js']
-                }
-            ]
+                    files: (options === null || options === void 0 ? void 0 : options.config) || 'translate.config',
+                    extensions: ['ts', 'js'],
+                },
+            ],
         });
         config.toolsLang = (_a = config.toolsLang) !== null && _a !== void 0 ? _a : 'zh-CN';
         const incrementalMode = (_b = config.incrementalMode) !== null && _b !== void 0 ? _b : IncrementalMode.cover;
@@ -78,8 +79,8 @@ program.description('Translate a single js/ts/json file')
                 name: 'targetConfig',
                 choices: config.translate.map(it => ({
                     name: it.label,
-                    value: it.targetConfig
-                }))
+                    value: it.targetConfig,
+                })),
             }];
         if (config.translate.length > 1) {
             void inquirer
@@ -103,7 +104,7 @@ program.description('Translate a single js/ts/json file')
                             excludeKeysByContentIncludes: config.excludeKeysByContentIncludes,
                             translateRuntimeMergeEnabled: config.translateRuntimeMergeEnabled,
                             mergeEnabledChunkValuesLength: config.mergeEnabledChunkValuesLength,
-                            reservedKeywords: config.reservedKeywords
+                            reservedKeywords: config.reservedKeywords,
                         });
                     });
                 });
@@ -128,7 +129,7 @@ program.description('Translate a single js/ts/json file')
                         excludeKeysByContentIncludes: config.excludeKeysByContentIncludes,
                         translateRuntimeMergeEnabled: config.translateRuntimeMergeEnabled,
                         mergeEnabledChunkValuesLength: config.mergeEnabledChunkValuesLength,
-                        reservedKeywords: config.reservedKeywords
+                        reservedKeywords: config.reservedKeywords,
                     });
                 });
             });
