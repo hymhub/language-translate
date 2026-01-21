@@ -1,6 +1,6 @@
 import type { Proxy, ApiKeyConfig, SourceLanguageCode, TargetLanguageCode } from './types';
 import { IncrementalMode, Lang } from './types.js';
-export declare const translate: ({ input, output, fromLang, targetLang, toolsLang, proxy, apiKeyConfig, incrementalMode, translateRuntimeDelay, translateRuntimeChunkSize, translateRuntimeMergeEnabled, mergeEnabledChunkValuesLength, ignoreValuesAndCopyToTarget }: {
+export declare const translate: ({ input, output, fromLang, targetLang, toolsLang, proxy, apiKeyConfig, incrementalMode, translateRuntimeDelay, translateRuntimeChunkSize, translateRuntimeMergeEnabled, mergeEnabledChunkValuesLength, ignoreValuesAndCopyToTarget, excludeFilesByIncludes, reservedKeywords, excludeKeysByContentIncludes }: {
     input: string;
     output: string;
     fromLang: Lang | SourceLanguageCode;
@@ -13,5 +13,8 @@ export declare const translate: ({ input, output, fromLang, targetLang, toolsLan
     translateRuntimeChunkSize?: number | undefined;
     translateRuntimeMergeEnabled?: boolean | undefined;
     mergeEnabledChunkValuesLength?: number | undefined;
-    ignoreValuesAndCopyToTarget?: string[] | undefined;
+    ignoreValuesAndCopyToTarget?: (string | RegExp | ((s: string) => boolean))[] | undefined;
+    excludeFilesByIncludes?: (string | RegExp | ((s: string) => boolean))[] | undefined;
+    excludeKeysByContentIncludes?: (string | RegExp | ((s: string) => boolean))[] | undefined;
+    reservedKeywords?: (string | RegExp)[] | undefined;
 }) => Promise<undefined>;

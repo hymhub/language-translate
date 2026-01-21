@@ -16,6 +16,9 @@ import { getTranslator } from './translators.js'
 import fs from 'fs'
 import path from 'path'
 import prettier from 'prettier'
+
+const arSplitter = genKey('splitter')
+
 export const translate = async ({
   input,
   output,
@@ -29,7 +32,10 @@ export const translate = async ({
   translateRuntimeChunkSize = 5,
   translateRuntimeMergeEnabled = true,
   mergeEnabledChunkValuesLength = 5000,
-  ignoreValuesAndCopyToTarget = []
+  ignoreValuesAndCopyToTarget = [],
+  excludeFilesByIncludes = [],
+  reservedKeywords = [/\{\{.+?}}/],
+  excludeKeysByContentIncludes = [/\{\{.+?}}/]
 }: {
   input: string
   output: string
@@ -43,7 +49,10 @@ export const translate = async ({
   translateRuntimeChunkSize?: number
   translateRuntimeMergeEnabled?: boolean
   mergeEnabledChunkValuesLength?: number
-  ignoreValuesAndCopyToTarget?: string[]
+  ignoreValuesAndCopyToTarget?: Array<string | RegExp | ((s: string) => boolean)>
+  excludeFilesByIncludes?: Array<string | RegExp | ((s: string) => boolean)>
+  excludeKeysByContentIncludes?: Array<string | RegExp | ((s: string) => boolean)>
+  reservedKeywords?: Array<string | RegExp>
 }): Promise<undefined> => {
   if (!isFilePath(input)) {
     return
@@ -58,7 +67,7 @@ export const translate = async ({
 
   let inputStartStr = ''
   // ------readSourceJson start-------
-  let sourceText
+  let sourceText: string
   try {
     sourceText = fs.readFileSync(input, 'utf8')
     if (sourceText.includes('export') && !input.endsWith('.json')) {
@@ -92,49 +101,100 @@ export const translate = async ({
     consoleError(ls[toolsLang].sourceNull)
     return
   }
+  JSON.stringify(sourceJson, function (k, v) {
+    if (Array.isArray(v)) this[k] = v.join(arSplitter)
+    return v
+  })
   // ------readSourceJson end-------
   const translateRun = async (jsonObj: Record<string, any>, isMergeEnable = false): Promise<Record<string, any>> => {
     const resJsonObj: Record<string, any> = {}
+    const splitter = '\n[_]\n'
     for (const key in jsonObj) {
-      const text = jsonObj[key]
-      if (typeof text === 'string') {
-        let resText = ''
-        const ignore = ignoreValuesAndCopyToTarget.includes(text)
-        if (ignore) {
-          resText = text
-        } else if (/\{\{.+?\}\}/.test(text)) {
-          const texts = text.split(/\{\{.+?\}\}/g)
-          const slots: string[] = []
-          text.replace(/\{\{.+?\}\}/g, (v) => {
-            slots.push(v)
-            return ''
-          })
-          for (let i = 0; i < texts.length; i++) {
-            const text = texts[i]
-            if (text.length > 0) {
-              const resFragment = await translator(text)
-              texts[i] = resFragment
-            }
-          }
-          for (let j = 0; j < texts.length; j++) {
-            const str = texts[j]
-            resText += str
-            if (j < texts.length - 1) {
-              resText += slots[j]
-            }
-          }
-        } else {
-          resText = await translator(text)
-        }
-        if (translateRuntimeDelay > 0 && !ignore) {
-          consoleLog(`delay ${translateRuntimeDelay}ms`)
-          await new Promise((resolve) => setTimeout(resolve, translateRuntimeDelay))
-        }
-        isMergeEnable || consoleSuccess(`${fromLang}: ${text} --${ignore ? '(with ignore copy)-' : ''}-> ${targetLang}: ${resText}`)
-        resJsonObj[key] = resText
+      let text: string = jsonObj[key]
+      let a = text.split(splitter)
+      const oSkipped: Record<string, string | number> = { length: 0 }
+      const oReserved: Record<string, any> = { length: 0 }
+      let resText = ''
+      const ignore = excludeFilesByIncludes.findIndex(v => {
+        if (v === '' || v === null) return false
+        if (v === text) return true
+        if (v instanceof RegExp) return v.test(text)
+        if (v instanceof Function) return v(text)
+        return false
+      }) > -1
+      if (ignore) {
+        resText = text
       } else {
-        resJsonObj[key] = await translateRun(text)
+        // 添加跳过 字段内容 包含特定字符串或匹配正则或者函数的 字段
+        if (excludeKeysByContentIncludes !== undefined && (excludeKeysByContentIncludes.length > 0)) {
+          for (let i = 0, j = a.length; i < j; i++) {
+            const v = a[i]
+            if (v === '') continue
+            if (excludeKeysByContentIncludes.findIndex(x => {
+              if (v === '' || v === null) return false
+              if (x === v) return true
+              if (x instanceof RegExp) return x.test(v)
+              if (x instanceof Function) return x(v)
+              return false
+            }) > -1) {
+              oSkipped[i] = v;
+              (oSkipped.length as number)++
+              a[i] = '-'
+            }
+          }
+          if (oSkipped.length as number > 0) text = a.join(splitter)
+        }
+        // 查找并标记保留字
+        if (reservedKeywords !== undefined && (reservedKeywords.length > 0)) {
+          for (let i = 0, j = a.length; i < j; i++) {
+            const v: string = a[i]
+            const changes: Record<string, string[]> = {}
+            let n = 0
+            if (v === '' || v === null) continue
+            reservedKeywords.forEach(x => {
+              if (x instanceof RegExp ? !x.test(v) : x !== '' && !v.includes(x)) return
+              let key = ''
+              const value: string[] = []
+              a[i] = v.replace(x, vv => {
+                if (key === '') key = `A0R0Z${i}A0R1Z${n++}A0R2Z`
+                value.push(vv)
+                changes[key] = value
+                return key
+              })
+            })
+            if (n > 0) {
+              oReserved[i] = changes
+              oReserved.length++
+            }
+          }
+          if (oReserved.length > 0) text = a.join(splitter)
+        }
       }
+      if (!ignore) resText = await translator(text)
+      // 还原 被跳过的原始语句
+      if (oSkipped.length as number > 0) {
+        delete oSkipped.length
+        a = resText.split(splitter)
+        Object.keys(oSkipped).forEach(key => {
+          a[parseInt(key)] = oSkipped[key] as string
+        })
+        resText = a.join(splitter)
+      }
+      // 还原 保留关键字
+      if (oReserved.length > 0) {
+        delete oReserved.length
+        Object.keys(oReserved).forEach(n => {
+          Object.keys(oReserved[n]).forEach(k => {
+            for (const v of oReserved[n][k]) resText = resText.replace(k, v)
+          })
+        })
+      }
+      if (translateRuntimeDelay > 0 && !ignore) {
+        consoleLog(`delay ${translateRuntimeDelay}ms`)
+        await new Promise((resolve) => setTimeout(resolve, translateRuntimeDelay))
+      }
+      isMergeEnable || consoleSuccess(`${fromLang}: ${text} --${ignore ? '(with ignore copy)-' : ''}-> ${targetLang}: ${resText}`)
+      resJsonObj[key] = resText
     }
     return resJsonObj
   }
@@ -204,14 +264,14 @@ export const translate = async ({
       outPutBuffer += `${item}`
     })
     if (outFile != null) {
-      outPutBuffer += JSON.stringify(mergeJson(outTextJson, resJson)).slice(1)
+      outPutBuffer += stringify(mergeJson(outTextJson, resJson)).slice(1)
       outPutBuffer = await prettier.format(outPutBuffer, { parser: output.endsWith('.json') ? 'json' : 'typescript' })
       fs.writeFileSync(output, outPutBuffer)
       if (outTipMsg.length === 0) {
         outTipMsg = `${ls[toolsLang].patchSuccess} --> ${output}`
       }
     } else {
-      outPutBuffer += JSON.stringify(resJson).slice(1)
+      outPutBuffer += stringify(resJson).slice(1)
       outPutBuffer = await prettier.format(outPutBuffer, { parser: output.endsWith('.json') ? 'json' : 'typescript' })
       const outDirname = path.dirname(output)
       fs.existsSync(outDirname) || fs.mkdirSync(outDirname, { recursive: true })
@@ -267,7 +327,7 @@ export const translate = async ({
         return
       }
       chunk[0].forEach((key, idx) => {
-        const ignore = ignoreValuesAndCopyToTarget.includes(chunk[1][idx])
+        const ignore = excludeFilesByIncludes.includes(chunk[1][idx])
         if (ignore) {
           outValues[idx] = chunk[1][idx]
         }
@@ -300,4 +360,16 @@ export const translate = async ({
   }
 
   consoleLog(outTipMsg)
+}
+
+function genKey (s: string) {
+  // return `[${s.toUpperCase().split('').join('_')}]`
+  return '[____]'
+}
+
+function stringify (s: any) {
+  return JSON.stringify(s, function (k, v) {
+    if (typeof v === 'string' && v.includes(arSplitter)) return v.split(arSplitter)
+    return v
+  })
 }

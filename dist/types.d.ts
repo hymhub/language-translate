@@ -292,7 +292,10 @@ export interface ExportConfig {
      * @default 5000
      */
     mergeEnabledChunkValuesLength?: number;
-    ignoreValuesAndCopyToTarget?: string[];
+    ignoreValuesAndCopyToTarget?: Array<string | RegExp | ((s: string) => boolean)>;
+    excludeFilesByIncludes?: Array<string | RegExp | ((s: string) => boolean)>;
+    excludeKeysByContentIncludes?: Array<string | RegExp | ((s: string) => boolean)>;
+    reservedKeywords?: Array<string | RegExp>;
     translate: Translate[];
 }
 export {};
